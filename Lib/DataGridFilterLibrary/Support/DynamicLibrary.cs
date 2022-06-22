@@ -72,8 +72,9 @@ namespace DataGridFilterLibrary.Support
 
         public static IQueryable Take(this IQueryable source, int count)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            return source.Provider.CreateQuery(
+            return source == null
+                ? throw new ArgumentNullException("source")
+                : source.Provider.CreateQuery(
                 Expression.Call(
                     typeof(Queryable), "Take",
                     new Type[] { source.ElementType },
@@ -82,8 +83,9 @@ namespace DataGridFilterLibrary.Support
 
         public static IQueryable Skip(this IQueryable source, int count)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            return source.Provider.CreateQuery(
+            return source == null
+                ? throw new ArgumentNullException("source")
+                : source.Provider.CreateQuery(
                 Expression.Call(
                     typeof(Queryable), "Skip",
                     new Type[] { source.ElementType },
@@ -106,8 +108,9 @@ namespace DataGridFilterLibrary.Support
 
         public static bool Any(this IQueryable source)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            return (bool)source.Provider.Execute(
+            return source == null
+                ? throw new ArgumentNullException("source")
+                : (bool)source.Provider.Execute(
                 Expression.Call(
                     typeof(Queryable), "Any",
                     new Type[] { source.ElementType }, source.Expression));
@@ -115,8 +118,9 @@ namespace DataGridFilterLibrary.Support
 
         public static int Count(this IQueryable source)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            return (int)source.Provider.Execute(
+            return source == null
+                ? throw new ArgumentNullException("source")
+                : (int)source.Provider.Execute(
                 Expression.Call(
                     typeof(Queryable), "Count",
                     new Type[] { source.ElementType }, source.Expression));
@@ -149,10 +153,8 @@ namespace DataGridFilterLibrary.Support
 
         public DynamicProperty(string name, Type type)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (type == null) throw new ArgumentNullException("type");
-            this.name = name;
-            this.type = type;
+            this.name = name ?? throw new ArgumentNullException("name");
+            this.type = type ?? throw new ArgumentNullException("type");
         }
 
         public string Name
@@ -229,7 +231,7 @@ namespace DataGridFilterLibrary.Support
 
         public override bool Equals(object obj)
         {
-            return obj is Signature ? Equals((Signature)obj) : false;
+            return obj is Signature && Equals((Signature)obj);
         }
 
         public bool Equals(Signature other)
@@ -636,13 +638,12 @@ namespace DataGridFilterLibrary.Support
 
         public ExpressionParser(ParameterExpression[] parameters, string expression, object[] values)
         {
-            if (expression == null) throw new ArgumentNullException("expression");
             if (keywords == null) keywords = CreateKeywords();
             symbols = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             literals = new Dictionary<Expression, string>();
             if (parameters != null) ProcessParameters(parameters);
             if (values != null) ProcessValues(values);
-            text = expression;
+            text = expression ?? throw new ArgumentNullException("expression");
             textLen = text.Length;
             SetTextPos(0);
             NextToken();
@@ -802,13 +803,11 @@ namespace DataGridFilterLibrary.Support
                         {
                             right = Expression.Convert(right, left.Type);
                         }
-                        else if (right.Type.IsAssignableFrom(left.Type))
-                        {
-                            left = Expression.Convert(left, right.Type);
-                        }
                         else
                         {
-                            throw IncompatibleOperandsError(op.text, left, right, op.pos);
+                            left = right.Type.IsAssignableFrom(left.Type)
+                                ? (Expression)Expression.Convert(left, right.Type)
+                                : throw IncompatibleOperandsError(op.text, left, right, op.pos);
                         }
                     }
                 }
@@ -821,13 +820,9 @@ namespace DataGridFilterLibrary.Support
                         {
                             right = e;
                         }
-                        else if ((e = PromoteExpression(left, right.Type, true)) != null)
-                        {
-                            left = e;
-                        }
                         else
                         {
-                            throw IncompatibleOperandsError(op.text, left, right, op.pos);
+                            left = (e = PromoteExpression(left, right.Type, true)) != null ? e : throw IncompatibleOperandsError(op.text, left, right, op.pos);
                         }
                     }
                 }
@@ -1023,24 +1018,21 @@ namespace DataGridFilterLibrary.Support
             string text = token.text;
             if (text[0] != '-')
             {
-                ulong value;
-                if (!UInt64.TryParse(text, out value))
+                if (!UInt64.TryParse(text, out ulong value))
                     throw ParseError(Res.InvalidIntegerLiteral, text);
                 NextToken();
-                if (value <= (ulong)Int32.MaxValue) return CreateLiteral((int)value, text);
-                if (value <= (ulong)UInt32.MaxValue) return CreateLiteral((uint)value, text);
-                if (value <= (ulong)Int64.MaxValue) return CreateLiteral((long)value, text);
-                return CreateLiteral(value, text);
+                return value <= (ulong)Int32.MaxValue
+                    ? CreateLiteral((int)value, text)
+                    : value <= (ulong)UInt32.MaxValue
+                    ? CreateLiteral((uint)value, text)
+                    : value <= (ulong)Int64.MaxValue ? CreateLiteral((long)value, text) : CreateLiteral(value, text);
             }
             else
             {
-                long value;
-                if (!Int64.TryParse(text, out value))
+                if (!Int64.TryParse(text, out long value))
                     throw ParseError(Res.InvalidIntegerLiteral, text);
                 NextToken();
-                if (value >= Int32.MinValue && value <= Int32.MaxValue)
-                    return CreateLiteral((int)value, text);
-                return CreateLiteral(value, text);
+                return value >= Int32.MinValue && value <= Int32.MaxValue ? CreateLiteral((int)value, text) : CreateLiteral(value, text);
             }
         }
 
@@ -1111,8 +1103,7 @@ namespace DataGridFilterLibrary.Support
                 NextToken();
                 return expr;
             }
-            if (it != null) return ParseMemberAccess(null, it);
-            throw ParseError(Res.UnknownIdentifier, token.text);
+            return it != null ? ParseMemberAccess(null, it) : throw ParseError(Res.UnknownIdentifier, token.text);
         }
 
         Expression ParseIt()
@@ -1128,9 +1119,9 @@ namespace DataGridFilterLibrary.Support
             int errorPos = token.pos;
             NextToken();
             Expression[] args = ParseArgumentList();
-            if (args.Length != 3)
-                throw ParseError(errorPos, Res.IifRequiresThreeArgs);
-            return GenerateConditional(args[0], args[1], args[2], errorPos);
+            return args.Length != 3
+                ? throw ParseError(errorPos, Res.IifRequiresThreeArgs)
+                : GenerateConditional(args[0], args[1], args[2], errorPos);
         }
 
         Expression GenerateConditional(Expression test, Expression expr1, Expression expr2, int errorPos)
@@ -1205,9 +1196,9 @@ namespace DataGridFilterLibrary.Support
             NextToken();
             Expression[] args = ParseArgumentList();
             MethodBase method;
-            if (FindMethod(lambda.Type, "Invoke", false, args, out method) != 1)
-                throw ParseError(errorPos, Res.ArgsIncompatibleWithLambda);
-            return Expression.Invoke(lambda, args);
+            return FindMethod(lambda.Type, "Invoke", false, args, out method) != 1
+                ? throw ParseError(errorPos, Res.ArgsIncompatibleWithLambda)
+                : (Expression)Expression.Invoke(lambda, args);
         }
 
         Expression ParseTypeAccess(Type type)
@@ -1255,10 +1246,10 @@ namespace DataGridFilterLibrary.Support
                     (IsNumericType(type)) || IsEnumType(type))
                     return Expression.ConvertChecked(expr, type);
             }
-            if (exprType.IsAssignableFrom(type) || type.IsAssignableFrom(exprType) ||
-                exprType.IsInterface || type.IsInterface)
-                return Expression.Convert(expr, type);
-            throw ParseError(errorPos, Res.CannotConvertValue,
+            return exprType.IsAssignableFrom(type) || type.IsAssignableFrom(exprType) ||
+                exprType.IsInterface || type.IsInterface
+                ? (Expression)Expression.Convert(expr, type)
+                : throw ParseError(errorPos, Res.CannotConvertValue,
                 GetTypeName(exprType), GetTypeName(type));
         }
 
@@ -1302,12 +1293,12 @@ namespace DataGridFilterLibrary.Support
             else
             {
                 MemberInfo member = FindPropertyOrField(type, id, instance == null);
-                if (member == null)
-                    throw ParseError(errorPos, Res.UnknownPropertyOrField,
-                        id, GetTypeName(type));
-                return member is PropertyInfo ?
+                return member == null
+                    ? throw ParseError(errorPos, Res.UnknownPropertyOrField,
+                        id, GetTypeName(type))
+                    : (Expression)(member is PropertyInfo ?
                     Expression.Property(instance, (PropertyInfo)member) :
-                    Expression.Field(instance, (FieldInfo)member);
+                    Expression.Field(instance, (FieldInfo)member));
             }
         }
 
@@ -1339,23 +1330,8 @@ namespace DataGridFilterLibrary.Support
             MethodBase signature;
             if (FindMethod(typeof(IEnumerableSignatures), methodName, false, args, out signature) != 1)
                 throw ParseError(errorPos, Res.NoApplicableAggregate, methodName);
-            Type[] typeArgs;
-            if (signature.Name == "Min" || signature.Name == "Max")
-            {
-                typeArgs = new Type[] { elementType, args[0].Type };
-            }
-            else
-            {
-                typeArgs = new Type[] { elementType };
-            }
-            if (args.Length == 0)
-            {
-                args = new Expression[] { instance };
-            }
-            else
-            {
-                args = new Expression[] { instance, Expression.Lambda(args[0], innerIt) };
-            }
+            Type[] typeArgs = signature.Name == "Min" || signature.Name == "Max" ? (new Type[] { elementType, args[0].Type }) : (new Type[] { elementType });
+            args = args.Length == 0 ? (new Expression[] { instance }) : (new Expression[] { instance, Expression.Lambda(args[0], innerIt) });
             return Expression.Call(typeof(Enumerable), signature.Name, typeArgs, args);
         }
 
@@ -1394,9 +1370,7 @@ namespace DataGridFilterLibrary.Support
                 if (expr.Type.GetArrayRank() != 1 || args.Length != 1)
                     throw ParseError(errorPos, Res.CannotIndexMultiDimArray);
                 Expression index = PromoteExpression(args[0], typeof(int), true);
-                if (index == null)
-                    throw ParseError(errorPos, Res.InvalidIndex);
-                return Expression.ArrayIndex(expr, index);
+                return index == null ? throw ParseError(errorPos, Res.InvalidIndex) : (Expression)Expression.ArrayIndex(expr, index);
             }
             else
             {
@@ -1648,8 +1622,7 @@ namespace DataGridFilterLibrary.Support
                 }
                 else
                 {
-                    string text;
-                    if (literals.TryGetValue(ce, out text))
+                    if (literals.TryGetValue(ce, out string text))
                     {
                         Type target = GetNonNullableType(type);
                         Object value = null;
@@ -1673,12 +1646,7 @@ namespace DataGridFilterLibrary.Support
                     }
                 }
             }
-            if (IsCompatibleWith(expr.Type, type))
-            {
-                if (type.IsValueType || exact) return Expression.Convert(expr, type);
-                return expr;
-            }
-            return null;
+            return IsCompatibleWith(expr.Type, type) ? type.IsValueType || exact ? Expression.Convert(expr, type) : expr : null;
         }
 
         static object ParseNumber(string text, Type type)
@@ -1893,11 +1861,11 @@ namespace DataGridFilterLibrary.Support
             if (s == t2) return -1;
             bool t1t2 = IsCompatibleWith(t1, t2);
             bool t2t1 = IsCompatibleWith(t2, t1);
-            if (t1t2 && !t2t1) return 1;
-            if (t2t1 && !t1t2) return -1;
-            if (IsSignedIntegralType(t1) && IsUnsignedIntegralType(t2)) return 1;
-            if (IsSignedIntegralType(t2) && IsUnsignedIntegralType(t1)) return -1;
-            return 0;
+            return t1t2 && !t2t1
+                ? 1
+                : t2t1 && !t1t2
+                ? -1
+                : IsSignedIntegralType(t1) && IsUnsignedIntegralType(t2) ? 1 : IsSignedIntegralType(t2) && IsUnsignedIntegralType(t1) ? -1 : 0;
         }
 
         Expression GenerateEqual(Expression left, Expression right)
@@ -1912,59 +1880,49 @@ namespace DataGridFilterLibrary.Support
 
         Expression GenerateGreaterThan(Expression left, Expression right)
         {
-            if (left.Type == typeof(string))
-            {
-                return Expression.GreaterThan(
+            return left.Type == typeof(string)
+                ? Expression.GreaterThan(
                     GenerateStaticMethodCall("Compare", left, right),
                     Expression.Constant(0)
-                );
-            }
-            return Expression.GreaterThan(left, right);
+                )
+                : (Expression)Expression.GreaterThan(left, right);
         }
 
         Expression GenerateGreaterThanEqual(Expression left, Expression right)
         {
-            if (left.Type == typeof(string))
-            {
-                return Expression.GreaterThanOrEqual(
+            return left.Type == typeof(string)
+                ? Expression.GreaterThanOrEqual(
                     GenerateStaticMethodCall("Compare", left, right),
                     Expression.Constant(0)
-                );
-            }
-            return Expression.GreaterThanOrEqual(left, right);
+                )
+                : (Expression)Expression.GreaterThanOrEqual(left, right);
         }
 
         Expression GenerateLessThan(Expression left, Expression right)
         {
-            if (left.Type == typeof(string))
-            {
-                return Expression.LessThan(
+            return left.Type == typeof(string)
+                ? Expression.LessThan(
                     GenerateStaticMethodCall("Compare", left, right),
                     Expression.Constant(0)
-                );
-            }
-            return Expression.LessThan(left, right);
+                )
+                : (Expression)Expression.LessThan(left, right);
         }
 
         Expression GenerateLessThanEqual(Expression left, Expression right)
         {
-            if (left.Type == typeof(string))
-            {
-                return Expression.LessThanOrEqual(
+            return left.Type == typeof(string)
+                ? Expression.LessThanOrEqual(
                     GenerateStaticMethodCall("Compare", left, right),
                     Expression.Constant(0)
-                );
-            }
-            return Expression.LessThanOrEqual(left, right);
+                )
+                : (Expression)Expression.LessThanOrEqual(left, right);
         }
 
         Expression GenerateAdd(Expression left, Expression right)
         {
-            if (left.Type == typeof(string) && right.Type == typeof(string))
-            {
-                return GenerateStaticMethodCall("Concat", left, right);
-            }
-            return Expression.Add(left, right);
+            return left.Type == typeof(string) && right.Type == typeof(string)
+                ? GenerateStaticMethodCall("Concat", left, right)
+                : Expression.Add(left, right);
         }
 
         Expression GenerateSubtract(Expression left, Expression right)
@@ -2244,13 +2202,15 @@ namespace DataGridFilterLibrary.Support
 
         static Dictionary<string, object> CreateKeywords()
         {
-            Dictionary<string, object> d = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            d.Add("true", trueLiteral);
-            d.Add("false", falseLiteral);
-            d.Add("null", nullLiteral);
-            d.Add(keywordIt, keywordIt);
-            d.Add(keywordIif, keywordIif);
-            d.Add(keywordNew, keywordNew);
+            Dictionary<string, object> d = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "true", trueLiteral },
+                { "false", falseLiteral },
+                { "null", nullLiteral },
+                { keywordIt, keywordIt },
+                { keywordIif, keywordIif },
+                { keywordNew, keywordNew }
+            };
             foreach (Type type in predefinedTypes) d.Add(type.Name, type);
             return d;
         }

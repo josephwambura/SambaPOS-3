@@ -33,11 +33,7 @@ namespace Samba.Presentation.Common.Widgets
 
         private static IWidgetCreator GetCreator(string creatorName)
         {
-            if (!string.IsNullOrEmpty(creatorName) && Creators.ContainsKey(creatorName))
-            {
-                return Creators[creatorName];
-            }
-            return DefaultWidgetCreator;
+            return !string.IsNullOrEmpty(creatorName) && Creators.ContainsKey(creatorName) ? Creators[creatorName] : DefaultWidgetCreator;
         }
 
         public static Widget CreateWidgetFor(string creatorName)

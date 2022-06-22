@@ -9,10 +9,7 @@ namespace Samba.Persistance.Specification
 
         public DirectSpecification(Expression<Func<TEntity, bool>> matchingCriteria)
         {
-            if (matchingCriteria == null)
-                throw new ArgumentNullException("matchingCriteria");
-
-            _matchingCriteria = matchingCriteria;
+            _matchingCriteria = matchingCriteria ?? throw new ArgumentNullException("matchingCriteria");
         }
 
         public override Expression<Func<TEntity, bool>> SatisfiedBy()

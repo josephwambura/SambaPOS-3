@@ -17,6 +17,7 @@ namespace Samba.Infrastructure.Settings
         public string MessagingServerName { get; set; }
         public string TerminalName { get; set; }
         public string ConnectionString { get; set; }
+        public string DatabaseSchema { get; set; }
         public bool StartMessagingClient { get; set; }
         public string LogoPath { get; set; }
         public string DefaultHtmlReportHeader { get; set; }
@@ -104,6 +105,12 @@ html
         {
             get { return _settingsObject.ConnectionString; }
             set { _settingsObject.ConnectionString = value; }
+        }
+
+        public static string DatabaseSchema
+        {
+            get { return _settingsObject.DatabaseSchema; }
+            set { _settingsObject.DatabaseSchema = value; }
         }
 
         public static bool StartMessagingClient
@@ -201,8 +208,8 @@ html
         public static string AppPath { get; set; }
         public static string DocumentPath { get { return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + AppName; } }
 
-        public static string DataPath { get { return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Ozgu Tech\\" + AppName; } }
-        public static string UserPath { get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Ozgu Tech\\" + AppName; } }
+        public static string DataPath { get { return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Matuka Developers\\" + AppName; } }
+        public static string UserPath { get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Matuka Developers\\" + AppName; } }
 
         public static string CommonSettingsFileName { get { return DataPath + "\\SambaSettings.txt"; } }
         public static string UserSettingsFileName { get { return UserPath + "\\SambaSettings.txt"; } }
@@ -250,11 +257,13 @@ html
         {
             get
             {
-                if (ConnectionString.ToLower().Contains(".sdf")) return "CE";
-                if (ConnectionString.ToLower().Contains("data source")) return "SQ";
-                if (ConnectionString.ToLower().StartsWith("mongodb://")) return "MG";
-                if (string.IsNullOrEmpty(ConnectionString) && IsSqlce40Installed()) return "CE";
-                return "TX";
+                return ConnectionString.ToLower().Contains(".sdf")
+                    ? "CE"
+                    : ConnectionString.ToLower().Contains("data source")
+                    ? "SQ"
+                    : ConnectionString.ToLower().StartsWith("mongodb://")
+                    ? "MG"
+                    : string.IsNullOrEmpty(ConnectionString) && IsSqlce40Installed() ? "CE" : "TX";
             }
         }
 
@@ -282,14 +291,9 @@ html
                     _versionData.Add(split[0], split[1]);
                 }
             }
-            if (_versionData.ContainsKey(versionType))
-            {
-                return _versionData[versionType];
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("versionType", "VersionType " + versionType + " doesn't exist!");
-            }
+            return _versionData.ContainsKey(versionType)
+                ? _versionData[versionType]
+                : throw new ArgumentOutOfRangeException("versionType", "VersionType " + versionType + " doesn't exist!");
         }
 
         public static bool IsSqlce40Installed()

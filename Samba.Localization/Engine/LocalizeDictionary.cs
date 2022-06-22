@@ -152,20 +152,12 @@ namespace Samba.Localization.Engine
 
             set
             {
-                // the cultureinfo cannot contains a null reference
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
 
                 // Set the CultureInfo
-                this.culture = value;
+                this.culture = value ?? throw new ArgumentNullException("value");
 
                 // Raise the OnCultureChanged event
-                if (this.OnCultureChanged != null)
-                {
-                    this.OnCultureChanged();
-                }
+                this.OnCultureChanged?.Invoke();
             }
         }
 
@@ -195,14 +187,7 @@ namespace Samba.Localization.Engine
         [DesignOnly(true)]
         public static string GetDesignCulture(DependencyObject obj)
         {
-            if (Instance.GetIsInDesignMode())
-            {
-                return (string)obj.GetValue(DesignCultureProperty);
-            }
-            else
-            {
-                return Instance.Culture.ToString();
-            }
+            return Instance.GetIsInDesignMode() ? (string)obj.GetValue(DesignCultureProperty) : Instance.Culture.ToString();
         }
 
         /// <summary>
@@ -290,17 +275,9 @@ namespace Samba.Localization.Engine
         /// <returns>The Assembly name</returns>
         public string GetAssemblyName(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException("assembly");
-            }
-
-            if (assembly.FullName == null)
-            {
-                throw new NullReferenceException("assembly.FullName is null");
-            }
-
-            return assembly.FullName.Split(',')[0];
+            return assembly == null
+                ? throw new ArgumentNullException("assembly")
+                : assembly.FullName == null ? throw new NullReferenceException("assembly.FullName is null") : assembly.FullName.Split(',')[0];
         }
 
         /// <summary>
@@ -309,13 +286,9 @@ namespace Samba.Localization.Engine
         /// <returns>TRUE if in design mode, else FALSE</returns>
         public bool GetIsInDesignMode()
         {
-            if (Application.Current == null)
-            {
-                return false;
-            }
-
-            return Application.Current.MainWindow == null ||
-                DesignerProperties.GetIsInDesignMode(Application.Current.MainWindow);
+            return Application.Current != null
+&& (Application.Current.MainWindow == null ||
+                DesignerProperties.GetIsInDesignMode(Application.Current.MainWindow));
         }
 
         /// <summary>

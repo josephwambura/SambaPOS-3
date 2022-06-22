@@ -25,10 +25,7 @@ namespace Samba.Modules.LoginModule
         private static string EmptyString { get { return " " + Localization.Properties.Resources.EnterPin; } }
         private void UpdatePinTextBox(string _pinValue)
         {
-            if (_pinValue == EmptyString)
-                PinTextBox.Text = _pinValue;
-            else
-                PinTextBox.Text = "".PadLeft(_pinValue.Length, '*');
+            PinTextBox.Text = _pinValue == EmptyString ? _pinValue : "".PadLeft(_pinValue.Length, '*');
         }
 
         private bool CheckPinValue()

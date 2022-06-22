@@ -169,12 +169,10 @@ namespace Samba.Modules.WorkperiodModule
 
             OpenTicketCount = _ticketService.GetOpenTicketCount();
 
-            if (OpenTicketCount > 0)
-            {
-                OpenTicketLabel = string.Format(Resources.ThereAreOpenTicketsWarning_f,
-                                  OpenTicketCount);
-            }
-            else OpenTicketLabel = "";
+            OpenTicketLabel = OpenTicketCount > 0
+                ? string.Format(Resources.ThereAreOpenTicketsWarning_f,
+                                  OpenTicketCount)
+                : "";
 
             RaisePropertyChanged(() => WorkPeriods);
             RaisePropertyChanged(() => LastEndOfDayLabel);

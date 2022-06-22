@@ -15,7 +15,7 @@ namespace Samba.MessagingServer.WindowsService
     {
         internal static readonly string MessagingServerPortFile = string.Format("{0}{1}",
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-            @"\Ozgu Tech\SambaPOS3\MessagingServerPort.dat");
+            @"\Matuka Developers\SambaPOS3\MessagingServerPort.dat");
         internal static readonly int StdPort = 8383;
         private static TcpChannel _channel;
 
@@ -125,8 +125,10 @@ namespace Samba.MessagingServer.WindowsService
 
             var clientProv = new BinaryClientFormatterSinkProvider();
 
-            IDictionary props = new Hashtable();
-            props["port"] = MessagingServerPort;
+            IDictionary props = new Hashtable
+            {
+                ["port"] = MessagingServerPort
+            };
 
             _channel = new TcpChannel(props, clientProv, serverProv);
             ChannelServices.RegisterChannel(_channel, false);

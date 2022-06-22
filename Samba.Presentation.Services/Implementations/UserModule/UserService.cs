@@ -101,8 +101,7 @@ namespace Samba.Presentation.Services.Implementations.UserModule
             if (user.UserRole.IsAdmin) return true;
             if (user.UserRole.Id == 0) return false;
             var permission = user.UserRole.Permissions.SingleOrDefault(x => x.Name == p);
-            if (permission == null) return false;
-            return permission.Value == (int)PermissionValue.Enabled;
+            return permission != null && permission.Value == (int)PermissionValue.Enabled;
         }
 
         public IEnumerable<UserRole> GetUserRoles()

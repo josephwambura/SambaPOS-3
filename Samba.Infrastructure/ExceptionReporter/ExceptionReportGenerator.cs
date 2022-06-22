@@ -12,17 +12,14 @@ namespace Samba.Infrastructure.ExceptionReporter
 
 		public ExceptionReportGenerator(ExceptionReportInfo reportInfo)
 		{
-			if (reportInfo == null)
-				throw new ExceptionReportGeneratorException("reportInfo cannot be null");
-
-			_reportInfo = reportInfo;
+			_reportInfo = reportInfo ?? throw new ExceptionReportGeneratorException("reportInfo cannot be null");
 
 			_reportInfo.ExceptionDate = DateTime.UtcNow;
 			_reportInfo.UserName = Environment.UserName;
 			_reportInfo.MachineName = Environment.MachineName;
 
-            if (_reportInfo.AppAssembly == null)
-			    _reportInfo.AppAssembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+			if (_reportInfo.AppAssembly == null)
+				_reportInfo.AppAssembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 		}
 
 		public string CreateExceptionReport()
@@ -44,19 +41,19 @@ namespace Samba.Infrastructure.ExceptionReporter
 		{
 			var retriever = new SysInfoRetriever();
 			var results = new List<SysInfoResult>
-			              {
-			              	retriever.Retrieve(SysInfoQueries.OperatingSystem).Filter(
-			              		new[]
-			              		{
-			              			"CodeSet", "CurrentTimeZone", "FreePhysicalMemory",
-			              			"OSArchitecture", "OSLanguage", "Version"
-			              		}),
-			              	retriever.Retrieve(SysInfoQueries.Machine).Filter(
-			              		new[]
-			              		{
-			              			"Machine", "UserName", "TotalPhysicalMemory", "Manufacturer", "Model"
-			              		}),
-			              };
+						  {
+							retriever.Retrieve(SysInfoQueries.OperatingSystem).Filter(
+								new[]
+								{
+									"CodeSet", "CurrentTimeZone", "FreePhysicalMemory",
+									"OSArchitecture", "OSLanguage", "Version"
+								}),
+							retriever.Retrieve(SysInfoQueries.Machine).Filter(
+								new[]
+								{
+									"Machine", "UserName", "TotalPhysicalMemory", "Manufacturer", "Model"
+								}),
+						  };
 			return results;
 		}
 
@@ -67,7 +64,7 @@ namespace Samba.Infrastructure.ExceptionReporter
 		}
 	}
 
-    [Serializable]
+	[Serializable]
 	internal class ExceptionReportGeneratorException : Exception
 	{
 		public ExceptionReportGeneratorException(string message) : base(message)

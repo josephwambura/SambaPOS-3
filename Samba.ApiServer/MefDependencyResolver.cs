@@ -23,7 +23,7 @@ namespace Samba.ApiServer
         public object GetService(Type serviceType)
         {
             var export = _container.GetExports(serviceType, null, null).SingleOrDefault();
-            return null != export ? export.Value : null;
+            return export?.Value;
         }
 
         public IEnumerable<object> GetServices(Type serviceType)

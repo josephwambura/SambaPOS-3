@@ -153,9 +153,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
 
         internal static void InvokeCreateType(ObjectMappingEventArgs e)
         {
-            EventHandler<ObjectMappingEventArgs> handler = CreateType;
-            if (handler != null)
-                handler(null, e);
+            CreateType?.Invoke(null, e);
         }
 
 
@@ -167,9 +165,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
 
         internal static void InvokeMapMissingType(TypeMappingEventArgs e)
         {
-            EventHandler<TypeMappingEventArgs> handler = MapMissingType;
-            if (handler != null)
-                handler(null, e);
+            MapMissingType?.Invoke(null, e);
         }
 
         /// <summary>
@@ -265,10 +261,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
             if (Assemblies.ContainsKey(assembly))
                 return;
             Assemblies[assembly] = true;
-            ScanAllTypesForAttribute((tp, attr) =>
-            {
-                Serializers[((SerializerAttribute)attr).SerializesType] = Activator.CreateInstance(tp) as ISerializeObject;
-            }, assembly, typeof(SerializerAttribute));
+            ScanAllTypesForAttribute((tp, attr) => Serializers[((SerializerAttribute)attr).SerializesType] = Activator.CreateInstance(tp) as ISerializeObject, assembly, typeof(SerializerAttribute));
         }
 
         //Function to be called when scanning types
@@ -397,14 +390,9 @@ namespace Samba.Infrastructure.Data.BinarySerializer
         {
             lock (FieldLists)
             {
-                IEnumerable<FieldInfo> ret = null;
-                if (FieldLists.ContainsKey(itm))
-                    ret = FieldLists[itm];
-                else
-                {
-                    ret = FieldLists[itm] = Type.GetTypeFromHandle(itm).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetField).Where(p => p.FieldType.GetCustomAttributes(typeof(DoNotSerialize), true).Count() == 0 && p.GetCustomAttributes(typeof(DoNotSerialize), false).Count() == 0).ToArray();
-                }
-
+                IEnumerable<FieldInfo> ret = FieldLists.ContainsKey(itm)
+                    ? FieldLists[itm]
+                    : (FieldLists[itm] = Type.GetTypeFromHandle(itm).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetField).Where(p => p.FieldType.GetCustomAttributes(typeof(DoNotSerialize), true).Count() == 0 && p.GetCustomAttributes(typeof(DoNotSerialize), false).Count() == 0).ToArray());
                 return IsChecksum ? ret.Where(p => p.GetCustomAttributes(typeof(DoNotChecksum), true).Count() == 0) : ret;
 
             }
@@ -429,8 +417,6 @@ namespace Samba.Infrastructure.Data.BinarySerializer
 
         [ThreadStatic]
         public static int currentVersion;
-
-
 
         public static object Deserialize(IStorage storage)
         {
@@ -629,11 +615,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
                 //Check if this is a simple value and read it if so
                 if (IsSimpleType(itemType))
                 {
-                    if (itemType.IsEnum)
-                    {
-                        return Enum.Parse(itemType, ReadValue(reader, typeof(int)).ToString(), true);
-                    }
-                    return ReadValue(reader, itemType);
+                    return itemType.IsEnum ? Enum.Parse(itemType, ReadValue(reader, typeof(int)).ToString(), true) : ReadValue(reader, itemType);
                 }
             }
             //See if we should lookup this object or create a new one
@@ -656,14 +638,9 @@ namespace Samba.Infrastructure.Data.BinarySerializer
                 {
                     int baseCount = reader.ReadInt32();
 
-                    if (baseCount == -1)
-                    {
-                        return OldDeserializeMultiDimensionArray(itemType, reader, baseCount);
-                    }
-                    else
-                    {
-                        return OldDeserializeArray(itemType, reader, baseCount);
-                    }
+                    return baseCount == -1
+                        ? OldDeserializeMultiDimensionArray(itemType, reader, baseCount)
+                        : OldDeserializeArray(itemType, reader, baseCount);
                 }
 
                 obj = instance ?? CreateObject(itemType);
@@ -891,7 +868,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
                 //Use the name to find the type
                 var propType = itemType.GetProperty(propName);
                 //Deserialize the value
-                var value = OldDeserializeObject(reader, propType != null ? propType.PropertyType : null);
+                var value = OldDeserializeObject(reader, propType?.PropertyType);
                 if (propType != null && value != null)
                 {
                     try
@@ -936,7 +913,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
                 var fieldId = reader.ReadUInt16();
                 var fieldName = PropertyIds[fieldId];
                 var fieldType = itemType.GetField(fieldName);
-                var value = OldDeserializeObject(reader, fieldType != null ? fieldType.FieldType : null);
+                var value = OldDeserializeObject(reader, fieldType?.FieldType);
                 if (fieldType != null && value != null)
                 {
                     try
@@ -1019,8 +996,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
                 return storage.ReadSimpleValue(itemType);
             }
             //See if we should lookup this object or create a new one
-            bool isReference;
-            int objectID = storage.BeginReadObject(out isReference);
+            int objectID = storage.BeginReadObject(out bool isReference);
             if (isReference)
             {
                 IsReference = true;
@@ -1049,8 +1025,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
             //Otherwise create the object
             if (itemType.IsArray)
             {
-                int baseCount;
-                bool isMultiDimensionArray = storage.IsMultiDimensionalArray(out baseCount);
+                bool isMultiDimensionArray = storage.IsMultiDimensionalArray(out int baseCount);
 
                 if (isMultiDimensionArray)
                 {
@@ -1094,11 +1069,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
             storage.EndReadObject();
             storage.FinishDeserializing(entry);
             //Check for null
-            if (obj is Nuller)
-            {
-                return null;
-            }
-            return result2;
+            return obj is Nuller ? null : result2;
         }
 
         /// <summary>
@@ -1162,13 +1133,12 @@ namespace Samba.Infrastructure.Data.BinarySerializer
         /// </remarks>
         private static object DeserializeMultiDimensionArray(Type itemType, IStorage storage, int objectID)
         {
+            storage.BeginReadMultiDimensionalArray(out int dimensions, out int totalLength);
+
             //Read the number of dimensions the array has
             //var dimensions = storage.ReadValue<int>("dimensions");
             //var totalLength = storage.ReadValue<int>("length");
-            int dimensions, totalLength, rowLength;
-            storage.BeginReadMultiDimensionalArray(out dimensions, out totalLength);
-
-            rowLength = 0;
+            int rowLength = 0;
 
             // Establish the length of each array element
             // and get the total 'row size'
@@ -1187,8 +1157,6 @@ namespace Samba.Infrastructure.Data.BinarySerializer
 
             //Get the expected element type
             var elementType = itemType.GetElementType();
-
-
 
             Array sourceArrays = Array.CreateInstance(elementType, lengths);
             DeserializeArrayPart(sourceArrays, 0, indices, itemType, storage, objectID);
@@ -1883,8 +1851,10 @@ namespace Samba.Infrastructure.Data.BinarySerializer
         private static object CreateInstance(Type itemType)
         {
             //Raise an event to construct the object
-            var ct = new ObjectMappingEventArgs();
-            ct.TypeToConstruct = itemType;
+            var ct = new ObjectMappingEventArgs
+            {
+                TypeToConstruct = itemType
+            };
             InvokeCreateType(ct);
             //Check if we created the right thing
             if (ct.Instance != null && (ct.Instance.GetType() == itemType || ct.Instance.GetType().IsSubclassOf(itemType)))
@@ -2293,8 +2263,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
         /// <param name = "value">The value to write</param>
         internal static void WriteValue(BinaryWriter writer, object value)
         {
-            WriteAValue write;
-            if (!Writers.TryGetValue(value.GetType(), out write))
+            if (!Writers.TryGetValue(value.GetType(), out WriteAValue write))
             {
                 writer.Write((int)value);
                 return;
@@ -2310,13 +2279,7 @@ namespace Samba.Infrastructure.Data.BinarySerializer
         /// <returns>The hydrated value</returns>
         internal static object ReadValue(BinaryReader reader, Type tp)
         {
-            ReadAValue read;
-            if (!Readers.TryGetValue(tp, out read))
-            {
-                return reader.ReadInt32();
-            }
-            return read(reader);
-
+            return !Readers.TryGetValue(tp, out ReadAValue read) ? reader.ReadInt32() : read(reader);
         }
 
         #endregion
@@ -2358,15 +2321,13 @@ namespace Samba.Infrastructure.Data.BinarySerializer
         /// <param name="entry"></param>
         private static void UpdateEntryWithName(Entry entry)
         {
-            Dictionary<string, EntryConfiguration> configurations;
-            if (!StoredTypes.TryGetValue(entry.OwningType, out configurations))
+            if (!StoredTypes.TryGetValue(entry.OwningType, out Dictionary<string, EntryConfiguration> configurations))
             {
                 configurations = new Dictionary<string, EntryConfiguration>();
                 StoredTypes[entry.OwningType] = configurations;
             }
 
-            EntryConfiguration entryConfiguration;
-            if (!configurations.TryGetValue(entry.Name, out entryConfiguration))
+            if (!configurations.TryGetValue(entry.Name, out EntryConfiguration entryConfiguration))
             {
                 entryConfiguration = new EntryConfiguration();
 

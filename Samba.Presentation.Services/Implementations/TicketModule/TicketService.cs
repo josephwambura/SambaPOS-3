@@ -47,8 +47,7 @@ namespace Samba.Presentation.Services.Implementations.TicketModule
 
         private decimal GetExchangeRate(Account account)
         {
-            if (account.ForeignCurrencyId == 0) return 1;
-            return _cacheService.GetCurrencyById(account.ForeignCurrencyId).ExchangeRate;
+            return account.ForeignCurrencyId == 0 ? 1 : _cacheService.GetCurrencyById(account.ForeignCurrencyId).ExchangeRate;
         }
 
         public void UpdateEntity(Ticket ticket, Entity entity, int accountTypeId, int accountId, string entityCustomData)
@@ -184,12 +183,12 @@ namespace Samba.Presentation.Services.Implementations.TicketModule
                 {
                     var entityType = _cacheService.GetEntityTypeById(ticketEntity.EntityTypeId);
                     _applicationState.NotifyEvent(RuleEventNames.EntityUpdated, new
-                                                                                       {
-                                                                                           EntityTypeId = ticketEntity.EntityTypeId,
-                                                                                           EntityId = ticketEntity.EntityId,
-                                                                                           EntityTypeName = entityType.Name,
-                                                                                           OpenTicketCount = _ticketServiceBase.GetOpenTicketIds(ticketEntity.EntityId).Count()
-                                                                                       });
+                    {
+                        EntityTypeId = ticketEntity.EntityTypeId,
+                        EntityId = ticketEntity.EntityId,
+                        EntityTypeName = entityType.Name,
+                        OpenTicketCount = _ticketServiceBase.GetOpenTicketIds(ticketEntity.EntityId).Count()
+                    });
                 }
             }
 
@@ -469,12 +468,12 @@ namespace Samba.Presentation.Services.Implementations.TicketModule
             {
                 _applicationState.NotifyEvent(RuleEventNames.OrderUntagged,
                                                new
-                                                   {
-                                                       Ticket = ticket,
-                                                       Order = selectedOrder,
-                                                       OrderTagName = orderTagGroup.Name,
-                                                       OrderTagValue = orderTag.Name
-                                                   });
+                                               {
+                                                   Ticket = ticket,
+                                                   Order = selectedOrder,
+                                                   OrderTagName = orderTagGroup.Name,
+                                                   OrderTagValue = orderTag.Name
+                                               });
             }
         }
 
@@ -499,9 +498,7 @@ namespace Samba.Presentation.Services.Implementations.TicketModule
 
         public bool CanCloseTicket(Ticket ticket)
         {
-            if (!ticket.IsLocked)
-                return CanDeselectOrders(ticket.Orders);
-            return true;
+            return ticket.IsLocked || CanDeselectOrders(ticket.Orders);
         }
 
         public bool CanSettleTicket(Ticket ticket)
@@ -536,14 +533,14 @@ namespace Samba.Presentation.Services.Implementations.TicketModule
                 order.SetStateValue(stateName, groupOrder, state, stateOrder, stateValue, _applicationState.CurrentLoggedInUser.Id);
                 _applicationState.NotifyEvent(RuleEventNames.OrderStateUpdated,
                                                new
-                                                   {
-                                                       Ticket = ticket,
-                                                       Order = order,
-                                                       StateName = stateName,
-                                                       State = state,
-                                                       StateValue = stateValue,
-                                                       PreviousState = currentState
-                                                   });
+                                               {
+                                                   Ticket = ticket,
+                                                   Order = order,
+                                                   StateName = stateName,
+                                                   State = state,
+                                                   StateValue = stateValue,
+                                                   PreviousState = currentState
+                                               });
             }
         }
 

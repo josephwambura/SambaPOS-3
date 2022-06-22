@@ -12,14 +12,8 @@ namespace Samba.Persistance.Specification
 
         public OrSpecification(ISpecification<T> leftSide, ISpecification<T> rightSide)
         {
-            if (leftSide == null)
-                throw new ArgumentNullException("leftSide");
-
-            if (rightSide == null)
-                throw new ArgumentNullException("rightSide");
-
-            _leftSideSpecification = leftSide;
-            _rightSideSpecification = rightSide;
+            _leftSideSpecification = leftSide ?? throw new ArgumentNullException("leftSide");
+            _rightSideSpecification = rightSide ?? throw new ArgumentNullException("rightSide");
         }
 
         public override ISpecification<T> LeftSideSpecification

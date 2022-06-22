@@ -325,9 +325,7 @@ namespace Samba.Modules.AutomationModule
         protected override string GetSaveErrorMessage()
         {
             var nextTime = GetNextDateTime();
-            if (nextTime == null)
-                return Resources.ErrorInExpression + "!";
-            return base.GetSaveErrorMessage();
+            return nextTime == null ? Resources.ErrorInExpression + "!" : base.GetSaveErrorMessage();
         }
 
         protected override void Initialize()

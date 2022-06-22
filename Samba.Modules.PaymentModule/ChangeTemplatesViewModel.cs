@@ -54,7 +54,7 @@ namespace Samba.Modules.PaymentModule
              
                 if (currency != null)
                 {
-                    returningAmount = returningAmount / currency.ExchangeRate;
+                    returningAmount /= currency.ExchangeRate;
                     return string.Format(currency.CurrencySymbol, returningAmount);
                 }
             }

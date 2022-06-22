@@ -18,11 +18,11 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(Entity model)
         {
-            if (Dao.Exists<EntityScreenItem>(y => y.EntityId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Entity, Resources.EntityScreen);
-            if (Dao.Exists<TicketEntity>(y => y.EntityId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Entity, Resources.Ticket);
-            return "";
+            return Dao.Exists<EntityScreenItem>(y => y.EntityId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Entity, Resources.EntityScreen)
+                : Dao.Exists<TicketEntity>(y => y.EntityId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Entity, Resources.Ticket)
+                : "";
         }
     }
 
@@ -45,16 +45,13 @@ namespace Samba.Persistance.Implementations
         {
             if (entityScreen == null) return;
 
-            IEnumerable<int> set;
-            if (entityScreen.PageCount > 1)
-            {
-                set = entityScreen.ScreenItems
+            IEnumerable<int> set = entityScreen.PageCount > 1
+                ? entityScreen.ScreenItems
                     .OrderBy(x => x.SortOrder)
                     .Skip(pageNo * entityScreen.ItemCountPerPage)
                     .Take(entityScreen.ItemCountPerPage)
-                    .Select(x => x.EntityId);
-            }
-            else set = entityScreen.ScreenItems.OrderBy(x => x.SortOrder).Select(x => x.EntityId);
+                    .Select(x => x.EntityId)
+                : entityScreen.ScreenItems.OrderBy(x => x.SortOrder).Select(x => x.EntityId);
             using (var w = WorkspaceFactory.CreateReadOnly())
             {
                 var result = w.Queryable<EntityStateValue>().Where(x => set.Contains(x.EntityId));
@@ -73,9 +70,9 @@ namespace Samba.Persistance.Implementations
             {
                 var ids = w.Queryable<EntityStateValue>().GroupBy(x => x.EntityId).Select(x => x.Max(y => y.Id));
                 var vids = w.Queryable<EntityStateValue>().Where(x => ids.Contains(x.Id) && (x.EntityStates.Contains(sv))).Select(x => x.EntityId).ToList();
-                if (vids.Count > 0)
-                    return w.Queryable<Entity>().Where(x => x.EntityTypeId == entityTypeId && vids.Contains(x.Id)).ToList();
-                return _emptyEntityList;
+                return vids.Count > 0
+                    ? w.Queryable<Entity>().Where(x => x.EntityTypeId == entityTypeId && vids.Contains(x.Id)).ToList()
+                    : (IEnumerable<Entity>)_emptyEntityList;
             }
         }
 

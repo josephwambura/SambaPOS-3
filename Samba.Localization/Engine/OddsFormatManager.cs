@@ -117,10 +117,7 @@ namespace Samba.Localization.Engine
                 this.oddsFormatType = value;
 
                 // Raise the OnOddsFormatChanged event
-                if (this.OnOddsFormatChanged != null)
-                {
-                    this.OnOddsFormatChanged();
-                }
+                this.OnOddsFormatChanged?.Invoke();
             }
         }
 
@@ -134,14 +131,7 @@ namespace Samba.Localization.Engine
         [DesignOnly(true)]
         public static OddsFormatType GetDesignOddsFormat(DependencyObject obj)
         {
-            if (Instance.GetIsInDesignMode())
-            {
-                return (OddsFormatType) obj.GetValue(DesignOddsFormatProperty);
-            }
-            else
-            {
-                return Instance.OddsFormatType;
-            }
+            return Instance.GetIsInDesignMode() ? (OddsFormatType) obj.GetValue(DesignOddsFormatProperty) : Instance.OddsFormatType;
         }
 
         /// <summary>
@@ -203,21 +193,11 @@ namespace Samba.Localization.Engine
                 return;
             }
 
-            if (!Enum.IsDefined(typeof(OddsFormatType), args.NewValue))
-            {
-                if (Instance.GetIsInDesignMode())
-                {
-                    Instance.OddsFormatType = DefaultOddsFormatType;
-                }
-                else
-                {
-                    throw new InvalidCastException(string.Format("\"{0}\" not defined in Enum OddsFormatType", args.NewValue));
-                }
-            }
-            else
-            {
-                Instance.OddsFormatType = (OddsFormatType) Enum.Parse(typeof(OddsFormatType), args.NewValue.ToString(), true);
-            }
+            Instance.OddsFormatType = !Enum.IsDefined(typeof(OddsFormatType), args.NewValue)
+                ? Instance.GetIsInDesignMode()
+                    ? DefaultOddsFormatType
+                    : throw new InvalidCastException(string.Format("\"{0}\" not defined in Enum OddsFormatType", args.NewValue))
+                : (OddsFormatType) Enum.Parse(typeof(OddsFormatType), args.NewValue.ToString(), true);
         }
 
         /// <summary>

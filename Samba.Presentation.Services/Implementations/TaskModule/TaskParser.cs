@@ -13,8 +13,9 @@ namespace Samba.Presentation.Services.Implementations.TaskModule
 
         public IEnumerable<TaskToken> Parse(Task task)
         {
-            if (string.IsNullOrEmpty(task.Content)) return null;
-            return task.Content.Split(',')
+            return string.IsNullOrEmpty(task.Content)
+                ? null
+                : (IEnumerable<TaskToken>)task.Content.Split(',')
                 .Select(ParseToken)
                 .Where(token => token != null)
                 .ToList();
@@ -30,8 +31,7 @@ namespace Samba.Presentation.Services.Implementations.TaskModule
                 result = parser.Parse(result.Value);
                 parser = Parsers.FirstOrDefault(x => x.Accepts(result.Value));
             }
-            if (string.IsNullOrEmpty(result.Value)) return null;
-            return new TaskToken { Caption = result.Value, Value = part, Type = result.TaskType };
+            return string.IsNullOrEmpty(result.Value) ? null : new TaskToken { Caption = result.Value, Value = part, Type = result.TaskType };
         }
     }
 }

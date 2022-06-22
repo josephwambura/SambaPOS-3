@@ -34,12 +34,11 @@ namespace Samba.Domain.Models.Settings
             if (string.IsNullOrEmpty(partName)) partName = "LAYOUT";
             if (Parts.ContainsKey(partName)) return Parts[partName].ToString();
             var p2 = partName.Contains(":") ? partName.Substring(0, partName.IndexOf(':')) : "";
-            if (Parts.ContainsKey(p2)) return Parts[p2].ToString();
-            if (Parts.Keys.Any(x => x.StartsWith(p2 + "|")))
-                return Parts[Parts.Keys.First(x => x.StartsWith(p2 + "|"))].ToString();
-            if (Parts.Keys.Any(x => x.StartsWith(partName + "|")))
-                return Parts[Parts.Keys.First(x => x.StartsWith(partName + "|"))].ToString();
-            return "";
+            return Parts.ContainsKey(p2)
+                ? Parts[p2].ToString()
+                : Parts.Keys.Any(x => x.StartsWith(p2 + "|"))
+                ? Parts[Parts.Keys.First(x => x.StartsWith(p2 + "|"))].ToString()
+                : Parts.Keys.Any(x => x.StartsWith(partName + "|")) ? Parts[Parts.Keys.First(x => x.StartsWith(partName + "|"))].ToString() : "";
         }
 
         private static IDictionary<string, StringBuilder> CreateParts(string template)
@@ -68,7 +67,7 @@ namespace Samba.Domain.Models.Settings
         public string GetSwitch(string s)
         {
             var key = Parts.Keys.FirstOrDefault(x => x.StartsWith(s + "|"));
-            return key != null ? key.Substring(key.IndexOf("|", StringComparison.Ordinal)).Trim('|') : null;
+            return key?.Substring(key.IndexOf("|", StringComparison.Ordinal)).Trim('|');
         }
 
         public Dictionary<string, string> GetFilters(string partName)

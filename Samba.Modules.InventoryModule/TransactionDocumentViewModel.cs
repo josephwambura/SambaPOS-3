@@ -122,14 +122,12 @@ namespace Samba.Modules.InventoryModule
 
         public void OnRowDeleted()
         {
-            EventHandler handler = RowDeleted;
-            if (handler != null) handler(this, EventArgs.Empty);
+            RowDeleted?.Invoke(this, EventArgs.Empty);
         }
 
         public void OnRowInserted()
         {
-            EventHandler handler = RowInserted;
-            if (handler != null) handler(this, EventArgs.Empty);
+            RowInserted?.Invoke(this, EventArgs.Empty);
         }
 
         public override Type GetViewType()

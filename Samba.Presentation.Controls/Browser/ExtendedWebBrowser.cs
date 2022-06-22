@@ -74,8 +74,7 @@ namespace Samba.Presentation.Controls.Browser
         /// </remarks>
         protected void OnDownloading(EventArgs e)
         {
-            if (Downloading != null)
-                Downloading(this, e);
+            Downloading?.Invoke(this, e);
         }
 
         /// <summary>
@@ -91,8 +90,7 @@ namespace Samba.Presentation.Controls.Browser
         /// <param name="e">Empty <see cref="EventArgs"/></param>
         protected virtual void OnDownloadComplete(EventArgs e)
         {
-            if (DownloadComplete != null)
-                DownloadComplete(this, e);
+            DownloadComplete?.Invoke(this, e);
         }
 
 
@@ -107,48 +105,42 @@ namespace Samba.Presentation.Controls.Browser
 
         public void InvokeStartNewWindow(BrowserExtendedNavigatingEventArgs e)
         {
-            EventHandler<BrowserExtendedNavigatingEventArgs> handler = StartNewWindow;
-            if (handler != null) handler(this, e);
+            StartNewWindow?.Invoke(this, e);
         }
 
         public event EventHandler<BrowserExtendedNavigatingEventArgs> StartNewTab;
 
         public void InvokeStartNewTab(BrowserExtendedNavigatingEventArgs e)
         {
-            EventHandler<BrowserExtendedNavigatingEventArgs> handler = StartNewTab;
-            if (handler != null) handler(this, e);
+            StartNewTab?.Invoke(this, e);
         }
 
         public event EventHandler<SizeChangedEventArgs> WindowSetWidth;
 
         public void InvokeWindowSetWidth(int e)
         {
-            EventHandler<SizeChangedEventArgs> handler = WindowSetWidth;
-            if (handler != null) handler(this, new SizeChangedEventArgs(e));
+            WindowSetWidth?.Invoke(this, new SizeChangedEventArgs(e));
         }
 
         public event EventHandler<SizeChangedEventArgs> WindowSetHeight;
 
         public void InvokeWindowSetHeight(int e)
         {
-            EventHandler<SizeChangedEventArgs> handler = WindowSetHeight;
-            if (handler != null) handler(this, new SizeChangedEventArgs(e));
+            WindowSetHeight?.Invoke(this, new SizeChangedEventArgs(e));
         }
 
         public event EventHandler<SizeChangedEventArgs> WindowsSetTop;
 
         public void InvokeWindowsSetTop(int e)
         {
-            EventHandler<SizeChangedEventArgs> handler = WindowsSetTop;
-            if (handler != null) handler(this, new SizeChangedEventArgs(e));
+            WindowsSetTop?.Invoke(this, new SizeChangedEventArgs(e));
         }
 
         public event EventHandler<SizeChangedEventArgs> WindowSetLeft;
 
         public void InvokeWindowSetLeft(int e)
         {
-            EventHandler<SizeChangedEventArgs> handler = WindowSetLeft;
-            if (handler != null) handler(this, new SizeChangedEventArgs(e));
+            WindowSetLeft?.Invoke(this, new SizeChangedEventArgs(e));
         }
 
 
@@ -200,8 +192,7 @@ namespace Samba.Presentation.Controls.Browser
             if (e == null)
                 throw new ArgumentNullException("e");
 
-            if (this.StartNavigate != null)
-                this.StartNavigate(this, e);
+            this.StartNavigate?.Invoke(this, e);
         }
 
         public string GetDocumentText()
@@ -421,14 +412,12 @@ namespace Samba.Presentation.Controls.Browser
                     {
                         if (m.WParam.ToInt32() == 131595)
                         {
-                            if (ForwardButtonClicked != null)
-                                ForwardButtonClicked(this, EventArgs.Empty);
+                            ForwardButtonClicked?.Invoke(this, EventArgs.Empty);
                             return;
                         }
                         else if (m.WParam.ToInt32() == 66059)
                         {
-                            if (BackButtonClicked != null)
-                                BackButtonClicked(this, EventArgs.Empty);
+                            BackButtonClicked?.Invoke(this, EventArgs.Empty);
                             return;
                         }
 
@@ -666,9 +655,7 @@ namespace Samba.Presentation.Controls.Browser
         /// </summary>
         protected void OnQuit()
         {
-            EventHandler h = Quit;
-            if (null != h)
-                h(this, EventArgs.Empty);
+            Quit?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

@@ -663,10 +663,7 @@ namespace Samba.Localization.BaseExtensions
         /// <param name="propertyName">Name of the property.</param>
         private void RaiseNotifyPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

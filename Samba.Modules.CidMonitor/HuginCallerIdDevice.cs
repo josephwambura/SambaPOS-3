@@ -37,10 +37,12 @@ namespace Samba.Modules.CidMonitor
         {
             try
             {
-                _port = new SerialPort(Settings.PortName);
-                _port.BaudRate = 38400;
-                _port.RtsEnable = false;
-                _port.DtrEnable = false;
+                _port = new SerialPort(Settings.PortName)
+                {
+                    BaudRate = 38400,
+                    RtsEnable = false,
+                    DtrEnable = false
+                };
                 _port.Open();
                 _port.DiscardOutBuffer();
                 _port.DiscardInBuffer();

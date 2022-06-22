@@ -31,18 +31,12 @@ namespace Samba.Modules.SettingsModule.ActionProcessors
                 if (updateType == Resources.Increase)
                 {
                     var settingValue = actionData.GetAsInteger("SettingValue");
-                    if (string.IsNullOrEmpty(setting.StringValue))
-                        setting.IntegerValue = settingValue;
-                    else
-                        setting.IntegerValue = setting.IntegerValue + settingValue;
+                    setting.IntegerValue = string.IsNullOrEmpty(setting.StringValue) ? settingValue : setting.IntegerValue + settingValue;
                 }
                 else if (updateType == Resources.Decrease)
                 {
                     var settingValue = actionData.GetAsInteger("SettingValue");
-                    if (string.IsNullOrEmpty(setting.StringValue))
-                        setting.IntegerValue = settingValue;
-                    else
-                        setting.IntegerValue = setting.IntegerValue - settingValue;
+                    setting.IntegerValue = string.IsNullOrEmpty(setting.StringValue) ? settingValue : setting.IntegerValue - settingValue;
                 }
                 else if (updateType == Resources.Toggle)
                 {

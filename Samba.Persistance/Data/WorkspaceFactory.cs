@@ -32,9 +32,9 @@ namespace Samba.Persistance.Data
 
             if (string.IsNullOrEmpty(_connectionString))
             {
-                if (LocalSettings.IsSqlce40Installed())
-                    _connectionString = string.Format("data source={0}\\{1}.sdf", LocalSettings.DocumentPath, LocalSettings.AppName);
-                else _connectionString = GetTextFileName();
+                _connectionString = LocalSettings.IsSqlce40Installed()
+                    ? string.Format("data source={0}\\{1}.sdf", LocalSettings.DocumentPath, LocalSettings.AppName)
+                    : GetTextFileName();
             }
             if (_connectionString.EndsWith(".sdf"))
             {
@@ -66,14 +66,12 @@ namespace Samba.Persistance.Data
 
         public static IWorkspace Create()
         {
-            if (_textFileWorkspace != null) return _textFileWorkspace;
-            return new EFWorkspace(new DataContext(false));
+            return _textFileWorkspace ?? (IWorkspace)new EFWorkspace(new DataContext(false));
         }
 
         public static IReadOnlyWorkspace CreateReadOnly()
         {
-            if (_textFileWorkspace != null) return _textFileWorkspace;
-            return new ReadOnlyEFWorkspace(new DataContext(true));
+            return _textFileWorkspace ?? (IReadOnlyWorkspace)new ReadOnlyEFWorkspace(new DataContext(true));
         }
 
         private static TextFileWorkspace GetTextFileWorkspace()

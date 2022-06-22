@@ -31,18 +31,24 @@ namespace Samba.Presentation.Controls.ListViewLM
 			FrameworkElementFactory imageElement = new FrameworkElementFactory( typeof( Image ) );
 
 			// image source
-			Binding imageSourceBinding = new Binding();
-			imageSourceBinding.Converter = this;
-			imageSourceBinding.Mode = BindingMode.OneWay;
+			Binding imageSourceBinding = new Binding
+			{
+				Converter = this,
+				Mode = BindingMode.OneWay
+			};
 			imageElement.SetBinding( Image.SourceProperty, imageSourceBinding );
 
 			// image stretching
-			Binding imageStretchBinding = new Binding();
-			imageStretchBinding.Source = imageStretch;
+			Binding imageStretchBinding = new Binding
+			{
+				Source = imageStretch
+			};
 			imageElement.SetBinding( Image.StretchProperty, imageStretchBinding );
 
-			DataTemplate template = new DataTemplate();
-			template.VisualTree = imageElement;
+			DataTemplate template = new DataTemplate
+			{
+				VisualTree = imageElement
+			};
 			CellTemplate = template;
 		} // ImageGridViewColumn
 

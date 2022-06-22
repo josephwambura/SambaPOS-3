@@ -58,8 +58,7 @@ namespace Samba.Presentation.ViewModels
 
         public int FindOrder(string t)
         {
-            if (Caption.ToLower().StartsWith(t.ToLower())) return -99 + Caption.Length;
-            return t.Length == 1 ? Caption.Length : Distance(Caption, t);
+            return Caption.ToLower().StartsWith(t.ToLower()) ? -99 + Caption.Length : t.Length == 1 ? Caption.Length : Distance(Caption, t);
         }
 
         public static int Distance(string s, string t)

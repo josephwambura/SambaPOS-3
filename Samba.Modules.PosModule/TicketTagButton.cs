@@ -20,11 +20,11 @@ namespace Samba.Modules.PosModule
         {
             get
             {
-                if (_ticket != null)
-                    return !string.IsNullOrEmpty(_ticket.GetTagValue(Model.Name))
+                return _ticket != null
+                    ? !string.IsNullOrEmpty(_ticket.GetTagValue(Model.Name))
                         ? Model.ButtonColorWhenTagSelected
-                        : Model.ButtonColorWhenNoTagSelected;
-                return "Gainsboro";
+                        : Model.ButtonColorWhenNoTagSelected
+                    : "Gainsboro";
             }
         }
     }

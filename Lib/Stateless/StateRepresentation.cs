@@ -29,8 +29,7 @@ namespace Stateless
 
             public bool CanHandle(TTrigger trigger)
             {
-                TriggerBehaviour unused;
-                return TryFindHandler(trigger, out unused);
+                return TryFindHandler(trigger, out TriggerBehaviour unused);
             }
 
             public bool TryFindHandler(TTrigger trigger, out TriggerBehaviour handler)
@@ -41,8 +40,7 @@ namespace Stateless
             
             bool TryFindLocalHandler(TTrigger trigger, out TriggerBehaviour handler)
             {
-                ICollection<TriggerBehaviour> possible;
-                if (!_triggerBehaviours.TryGetValue(trigger, out possible))
+                if (!_triggerBehaviours.TryGetValue(trigger, out ICollection<TriggerBehaviour> possible))
                 {
                     handler = null;
                     return false;
@@ -129,8 +127,7 @@ namespace Stateless
 
             public void AddTriggerBehaviour(TriggerBehaviour triggerBehaviour)
             {
-                ICollection<TriggerBehaviour> allowed;
-                if (!_triggerBehaviours.TryGetValue(triggerBehaviour.Trigger, out allowed))
+                if (!_triggerBehaviours.TryGetValue(triggerBehaviour.Trigger, out ICollection<TriggerBehaviour> allowed))
                 {
                     allowed = new List<TriggerBehaviour>();
                     _triggerBehaviours.Add(triggerBehaviour.Trigger, allowed);

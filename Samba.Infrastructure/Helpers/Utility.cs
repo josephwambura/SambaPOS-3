@@ -12,10 +12,9 @@ namespace Samba.Infrastructure.Helpers
     {
         public static string AddTypedValue(string actualValue, string typedValue, string format)
         {
-            decimal amnt;
             bool stringMode = false;
 
-            Decimal.TryParse(actualValue, out amnt);
+            Decimal.TryParse(actualValue, out decimal amnt);
             if (actualValue.EndsWith("-") || amnt == 0) stringMode = true;
             else
             {
@@ -120,15 +119,7 @@ namespace Samba.Infrastructure.Helpers
                 if (validChars.IndexOf(ch) == -1)
                     throw new Exception(ch + " is an invalid character");
                 var digit = ch - 48;
-                int weight;
-                if (i % 2 == 0)
-                {
-                    weight = (2 * digit) - digit / 5 * 9;
-                }
-                else
-                {
-                    weight = digit;
-                }
+                int weight = i % 2 == 0 ? (2 * digit) - digit / 5 * 9 : digit;
                 sum += weight;
             }
             sum = Math.Abs(sum) + 10;

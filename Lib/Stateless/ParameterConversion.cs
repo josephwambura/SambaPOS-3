@@ -18,11 +18,10 @@ namespace Stateless
 
             var arg = args[index];
 
-            if (arg != null && !argType.IsAssignableFrom(arg.GetType()))
-                throw new ArgumentException(
-                    string.Format(ParameterConversionResources.WrongArgType, index, arg.GetType(), argType));
-
-            return arg;
+            return arg != null && !argType.IsAssignableFrom(arg.GetType())
+                ? throw new ArgumentException(
+                    string.Format(ParameterConversionResources.WrongArgType, index, arg.GetType(), argType))
+                : arg;
         }
 
         public static TArg Unpack<TArg>(object[] args, int index)

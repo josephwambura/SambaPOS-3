@@ -163,9 +163,11 @@ namespace Samba.Domain.Tests
 
         public static TicketBuilderTestContext GetDefaultContext()
         {
-            var result = new TicketBuilderTestContext();
-            result.TicketType = new TicketType { Id = 1, SaleTransactionType = AccountTransactionType.Default };
-            result.Department = new Department { Id = 1 };
+            var result = new TicketBuilderTestContext
+            {
+                TicketType = new TicketType { Id = 1, SaleTransactionType = AccountTransactionType.Default },
+                Department = new Department { Id = 1 }
+            };
             return result;
         }
 
@@ -183,14 +185,16 @@ namespace Samba.Domain.Tests
 
         public TicketBuilderTestContext With10PercentDiscount()
         {
-            Calculations = new List<CalculationType>();
-            Calculations.Add(new CalculationType
+            Calculations = new List<CalculationType>
             {
-                CalculationMethod = 0,
-                Amount = 10,
-                Name = "%10 Discount",
-                AccountTransactionType = new AccountTransactionType()
-            });
+                new CalculationType
+                {
+                    CalculationMethod = 0,
+                    Amount = 10,
+                    Name = "%10 Discount",
+                    AccountTransactionType = new AccountTransactionType()
+                }
+            };
             return this;
         }
 

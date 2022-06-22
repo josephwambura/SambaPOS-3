@@ -97,9 +97,10 @@ namespace Samba.Infrastructure.Data.Serializer
 
         private static bool AssertListsAreEquals(ICollection actualList, IList expectedList)
         {
-            if (actualList == null) throw new ArgumentNullException("actualList");
-            if (actualList.Count != expectedList.Count) return false;
-            return !actualList.Cast<object>().Where((t, i) => !AreEquals(t, expectedList[i])).Any();
+            return actualList == null
+                ? throw new ArgumentNullException("actualList")
+                : actualList.Count == expectedList.Count
+&& !actualList.Cast<object>().Where((t, i) => !AreEquals(t, expectedList[i])).Any();
         }
     }
 }

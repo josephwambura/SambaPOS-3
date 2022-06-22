@@ -343,12 +343,12 @@ namespace Samba.Domain.Models.Tickets
 
         public string GetPortionDesc()
         {
-            if (PortionCount > 1
+            return PortionCount > 1
                 && !string.IsNullOrEmpty(PortionName)
                 && !string.IsNullOrEmpty(PortionName.Trim('\b', ' ', '\t'))
-                && PortionName.ToLower() != "normal")
-                return "." + PortionName;
-            return "";
+                && PortionName.ToLower() != "normal"
+                ? "." + PortionName
+                : "";
         }
 
         public void UpdatePrice(decimal value, string priceTag)
@@ -390,9 +390,7 @@ namespace Samba.Domain.Models.Tickets
 
         public OrderTagValue GetOrderTagValue(string s)
         {
-            if (OrderTagValues.Any(x => x.TagName == s))
-                return OrderTagValues.First(x => x.TagName == s);
-            return OrderTagValue.Empty;
+            return OrderTagValues.Any(x => x.TagName == s) ? OrderTagValues.First(x => x.TagName == s) : OrderTagValue.Empty;
         }
 
         public string OrderKey { get { return GetOrderKey(); } }
@@ -442,9 +440,11 @@ namespace Samba.Domain.Models.Tickets
         {
             state = state.Trim();
             stateName = stateName.Trim();
-            if (stateName == "*") return OrderStateValues.Any(x => x.State == state);
-            if (string.IsNullOrEmpty(state)) return OrderStateValues.All(x => x.StateName != stateName);
-            return OrderStateValues.Any(x => x.StateName == stateName && x.State == state);
+            return stateName == "*"
+                ? OrderStateValues.Any(x => x.State == state)
+                : string.IsNullOrEmpty(state)
+                ? OrderStateValues.All(x => x.StateName != stateName)
+                : OrderStateValues.Any(x => x.StateName == stateName && x.State == state);
         }
 
         public bool IsInState(string state)
@@ -506,17 +506,10 @@ namespace Samba.Domain.Models.Tickets
 
         public decimal GetTotal()
         {
-            if (CalculatePrice)
-            {
-                return GetValue();
-            }
-            return 0;
+            return CalculatePrice ? GetValue() : 0;
         }
 
-        public IEnumerable<TaxValue> GetTaxValues()
-        {
-            return TaxValues;
-        }
+        public IEnumerable<TaxValue> GetTaxValues() => TaxValues;
 
         public TaxValue GetTaxValue(string taxTemplateName)
         {
@@ -529,11 +522,7 @@ namespace Samba.Domain.Models.Tickets
         {
 
             var sv = GetStateValue(state);
-            if (sv != null)
-            {
-                return new TimeSpan(DateTime.Now.Ticks - sv.LastUpdateTime.Ticks).TotalMinutes.ToString("#");
-            }
-            return "";
+            return sv != null ? new TimeSpan(DateTime.Now.Ticks - sv.LastUpdateTime.Ticks).TotalMinutes.ToString("#") : "";
         }
     }
 }

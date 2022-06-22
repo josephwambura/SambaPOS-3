@@ -185,10 +185,12 @@ namespace Fluentscript.Lib.AST.Core
             result = members[0];
             string memberNameCaseIgnorant = result.Name;
             MemberMode mode = isStatic ? MemberMode.CustObjMethodStatic : MemberMode.CustObjMethodInstance;
-            MemberAccess member = new MemberAccess(mode);
-            member.DataType = type;
-            member.Instance = obj;
-            member.MemberName = MemberName;
+            MemberAccess member = new MemberAccess(mode)
+            {
+                DataType = type,
+                Instance = obj,
+                MemberName = MemberName
+            };
 
             // Property.
             if (result.MemberType == MemberTypes.Property)

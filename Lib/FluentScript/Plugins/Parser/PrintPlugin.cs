@@ -48,9 +48,7 @@ namespace Fluentscript.Lib.Plugins.Parser
         public override bool CanHandle(Token current)
         {
             var nextToken = _lexer.PeekToken();
-            if (nextToken.Token == Tokens.LeftParenthesis || nextToken.Token.Text == "\"")
-                return false;
-            return true;
+            return nextToken.Token != Tokens.LeftParenthesis && nextToken.Token.Text != "\"";
         }
 
 
@@ -102,9 +100,7 @@ namespace Fluentscript.Lib.Plugins.Parser
         public override bool CanHandle(Token current)
         {
             var next = _tokenIt.Peek().Token;
-            if (next == Tokens.LeftParenthesis)
-                return false;
-            return true;    
+            return next != Tokens.LeftParenthesis;
         }
 
 
@@ -116,12 +112,9 @@ namespace Fluentscript.Lib.Plugins.Parser
         {
             var printToken = _tokenIt.NextToken;
             var lineToken = _tokenIt.AdvanceAndGet<Token>();
-            Expr lineExp = null;
-            if (lineToken.Kind == TokenKind.Multi)
-                lineExp = _parser.ParseInterpolatedExpression(lineToken);
-            else
-                lineExp = Exprs.Const(new LString((string)lineToken.Value), printToken);
-
+            Expr lineExp = lineToken.Kind == TokenKind.Multi
+                ? _parser.ParseInterpolatedExpression(lineToken)
+                : Exprs.Const(new LString((string)lineToken.Value), printToken);
             var nameExp = Exprs.Ident(printToken.Token.Text, printToken);
             var exp = (FunctionCallExpr)Exprs.FunctionCall(nameExp, null, printToken);
             exp.ParamListExpressions.Add(lineExp);

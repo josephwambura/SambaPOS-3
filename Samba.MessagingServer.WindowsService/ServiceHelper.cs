@@ -28,10 +28,7 @@ namespace Samba.MessagingServer.WindowsService
         public static ServiceControllerStatus? CheckServiceStatus()
         {
             IniitServiceController();
-            if (_ctl == null)
-            { return null; }
-            else
-            { return _ctl.Status; }
+            return _ctl == null ? null : (ServiceControllerStatus?)_ctl.Status;
         }
 
         public static bool InstallWindowsService()
@@ -55,7 +52,7 @@ namespace Samba.MessagingServer.WindowsService
 
         public static void StopService()
         {
-            IniitServiceController();          
+            IniitServiceController();
             if (_ctl.Status == ServiceControllerStatus.Running)
             { _ctl.Stop(); }
         }
@@ -63,14 +60,16 @@ namespace Samba.MessagingServer.WindowsService
         public static bool UninstallWindowsService()
         {
             StopService();
-            
+
             return ServiceInstaller(true);
         }
 
         private static void IniitServiceController()
-        { _ctl = ServiceController.GetServices()
+        {
+            _ctl = ServiceController.GetServices()
                                   .Where(s => s.ServiceName == _serviceName)
-                                  .FirstOrDefault(); }
+                                  .FirstOrDefault();
+        }
 
         private static bool ServiceInstaller(bool uninstall = false)
         {
@@ -83,9 +82,10 @@ namespace Samba.MessagingServer.WindowsService
 
                 // Create an object of the 'AssemblyInstaller' class.
                 AssemblyInstaller myAssemblyInstaller = new
-                AssemblyInstaller(_installAssembly, commandLineOptions);
-
-                myAssemblyInstaller.UseNewContext = true;
+                AssemblyInstaller(_installAssembly, commandLineOptions)
+                {
+                    UseNewContext = true
+                };
 
                 if (!uninstall)
                 {
@@ -102,7 +102,7 @@ namespace Samba.MessagingServer.WindowsService
             }
             catch (Exception)
             { return false; }
-            
+
             return true;
         }
     }

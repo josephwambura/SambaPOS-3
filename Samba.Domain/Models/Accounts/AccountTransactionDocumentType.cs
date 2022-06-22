@@ -66,7 +66,7 @@ namespace Samba.Domain.Models.Accounts
             {
                 var transaction = AccountTransaction.Create(accountTransactionType);
                 var amountRate = GetExchangeRate(accountTransactionType.ForeignCurrencyId, currencies);
-                amount = amount * amountRate;
+                amount *= amountRate;
                 transaction.UpdateAmount(amount, exchangeRate, accounts);
                 transaction.UpdateAccount(MasterAccountTypeId, account.Id);
                 if (accounts != null && accounts.Count > 0)

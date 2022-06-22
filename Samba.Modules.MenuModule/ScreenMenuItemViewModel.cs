@@ -69,7 +69,7 @@ namespace Samba.Modules.MenuModule
             get { return Model.ImagePath ?? ""; }
             set
             {
-                Model.ImagePath = value != null ? value.Trim('\b') : null;
+                Model.ImagePath = value?.Trim('\b');
                 RaisePropertyChanged(() => ImagePath);
             }
         }

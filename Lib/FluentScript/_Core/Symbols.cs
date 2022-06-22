@@ -123,10 +123,11 @@ namespace Fluentscript.Lib._Core
             this.Name = meta.Name;
             this.Meta = meta;
             this.Category = SymbolCategory.Func;
-            this.DataType = new LFunctionType();
-            this.DataType.Name = meta.Name;
+            this.DataType = new LFunctionType
+            {
+                Name = meta.Name
+            };
         }
-
 
         /// <summary>
         /// Function metadata
@@ -344,10 +345,8 @@ namespace Fluentscript.Lib._Core
         public virtual bool IsCategory(string name, string categoryName)
         {
             var sym = this.GetSymbol(name);
-            if (sym == null) return false;
-            return sym.Category == categoryName;
+            return sym != null && sym.Category == categoryName;
         }
-
 
         /// <summary>
         /// Whether or not the symbol name supplied is a function.
@@ -357,10 +356,8 @@ namespace Fluentscript.Lib._Core
         public virtual bool IsFunction(string name)
         {
             var sym = this.GetSymbol(name);
-            if (sym == null) return false;
-            return sym.Category == SymbolCategory.Func;
+            return sym != null && sym.Category == SymbolCategory.Func;
         }
-
 
         /// <summary>
         /// Get the symbol associated with the supplied name
@@ -369,12 +366,8 @@ namespace Fluentscript.Lib._Core
         /// <returns></returns>
         public virtual Symbol GetSymbol(string name)
         {
-            if (this.Symbols.ContainsKey(name))
-                return Symbols[name];
-
-            return null;
+            return this.Symbols.ContainsKey(name) ? Symbols[name] : null;
         }
-
 
         /// <summary>
         /// Get the symbol associated with the supplied name
@@ -384,12 +377,8 @@ namespace Fluentscript.Lib._Core
         public virtual T GetSymbol<T>(string name) where T : class
         {
             object sym = this.GetSymbol(name);
-            if (sym == null)
-                return default(T);
-
-            return (T)sym;
+            return sym == null ? default(T) : (T)sym;
         }
-
 
         /// <summary>
         /// Define the supplied symbol to this instance of symbol table.
@@ -457,8 +446,10 @@ namespace Fluentscript.Lib._Core
         /// <param name="functionExpr">The function expression object that can execute the function</param>
         public virtual void DefineFunction(FunctionMetaData func, object functionExpr)
         {
-            var symbol = new SymbolFunction(func);
-            symbol.FuncExpr = functionExpr;
+            var symbol = new SymbolFunction(func)
+            {
+                FuncExpr = functionExpr
+            };
             this.Define(symbol);
         }
     }
@@ -501,13 +492,8 @@ namespace Fluentscript.Lib._Core
         /// <returns></returns>
         public override bool Contains(string name)
         {
-            if (base.Contains(name))
-                return true;
-            if (_parent != null && _parent.Contains(name))
-                return true;
-            return false;
+            return base.Contains(name) || _parent != null && _parent.Contains(name);
         }
-
 
         /// <summary>
         /// Get the symbol associated with the supplied name

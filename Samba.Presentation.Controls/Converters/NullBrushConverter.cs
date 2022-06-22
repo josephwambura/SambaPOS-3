@@ -11,9 +11,7 @@ namespace Samba.Presentation.Controls.Converters
         private readonly BrushConverter _brushConverter = new BrushConverter();
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null || value.ToString() == "")
-                return DependencyProperty.UnsetValue;
-            return _brushConverter.ConvertFromString(value.ToString());
+            return value == null || value.ToString() == "" ? DependencyProperty.UnsetValue : _brushConverter.ConvertFromString(value.ToString());
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

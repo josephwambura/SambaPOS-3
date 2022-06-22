@@ -32,12 +32,7 @@ namespace Fluentscript.Lib._Core
             }
 
             // Convert to correct type if basic type.
-            if (typeof(T) == typeof(object))
-            {
-                return (T)variable.Value;
-            }            
-
-            return (T)Convert.ChangeType(variable.Value, typeof(T), null);
+            return typeof(T) == typeof(object) ? (T)variable.Value : (T)Convert.ChangeType(variable.Value, typeof(T), null);
         }
 
 
@@ -116,8 +111,10 @@ namespace Fluentscript.Lib._Core
         /// </summary>
         public Scope()
         {
-            _stack = new List<Block>();
-            _stack.Add(new Block());
+            _stack = new List<Block>
+            {
+                new Block()
+            };
         }
 
 
@@ -168,9 +165,7 @@ namespace Fluentscript.Lib._Core
         {
             int stackIndex = Find(name);
             // Not found?
-            if (stackIndex == -1) throw new KeyNotFoundException("variable : " + name + " was not found");
-
-            return _stack[stackIndex].Get<T>(name);
+            return stackIndex == -1 ? throw new KeyNotFoundException("variable : " + name + " was not found") : _stack[stackIndex].Get<T>(name);
         }
 
 
@@ -317,8 +312,10 @@ namespace Fluentscript.Lib._Core
             _currentStackIndex = 0;
             _total = 0;
             _totalStringLength = 0;
-            _stack = new List<Block>();
-            _stack.Add(new Block());
+            _stack = new List<Block>
+            {
+                new Block()
+            };
         }
 
 

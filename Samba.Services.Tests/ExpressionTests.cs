@@ -144,7 +144,7 @@ namespace Samba.Services.Tests
         {
             var str = "EMRE";
             var cd = Utility.GenerateCheckDigit(str);
-            str = str + cd;
+            str += cd;
             var valid = Utility.ValidateCheckDigit(str);
             Assert.True(valid);
         }

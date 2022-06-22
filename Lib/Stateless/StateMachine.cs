@@ -76,9 +76,8 @@ namespace Stateless
 
         StateRepresentation GetRepresentation(TState state)
         {
-            StateRepresentation result;
 
-            if (!_stateConfiguration.TryGetValue(state, out result))
+            if (!_stateConfiguration.TryGetValue(state, out StateRepresentation result))
             {
                 result = new StateRepresentation(state);
                 _stateConfiguration.Add(state, result);
@@ -171,20 +170,17 @@ namespace Stateless
 
         void InternalFire(TTrigger trigger, params object[] args)
         {
-            TriggerWithParameters configuration;
-            if (_triggerConfiguration.TryGetValue(trigger, out configuration))
+            if (_triggerConfiguration.TryGetValue(trigger, out TriggerWithParameters configuration))
                 configuration.ValidateParameters(args);
 
-            TriggerBehaviour triggerBehaviour;
-            if (!CurrentRepresentation.TryFindHandler(trigger, out triggerBehaviour))
+            if (!CurrentRepresentation.TryFindHandler(trigger, out TriggerBehaviour triggerBehaviour))
             {
                 _unhandledTriggerAction(CurrentRepresentation.UnderlyingState, trigger);
                 return;
             }
 
             var source = State;
-            TState destination;
-            if (triggerBehaviour.ResultsInTransitionFrom(source, args, out destination))
+            if (triggerBehaviour.ResultsInTransitionFrom(source, args, out TState destination))
             {
                 var transition = new Transition(source, destination, trigger);
 
@@ -201,8 +197,7 @@ namespace Stateless
         /// <param name="unhandledTriggerAction">An action to call when an unhandled trigger is fired.</param>
         public void OnUnhandledTrigger(Action<TState, TTrigger> unhandledTriggerAction)
         {
-            if (unhandledTriggerAction == null) throw new ArgumentNullException("unhandledTriggerAction");
-            _unhandledTriggerAction = unhandledTriggerAction;
+            _unhandledTriggerAction = unhandledTriggerAction ?? throw new ArgumentNullException("unhandledTriggerAction");
         }
 
         /// <summary>

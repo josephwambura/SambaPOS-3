@@ -34,13 +34,13 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(Printer model)
         {
-            if (Dao.Exists<Terminal>(x => x.ReportPrinterId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Printer, Resources.Terminal);
-            if (Dao.Exists<Terminal>(x => x.TransactionPrinterId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Printer, Resources.Terminal);
-            if (Dao.Exists<PrinterMap>(x => x.PrinterId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Printer, Resources.PrintJob);
-            return "";
+            return Dao.Exists<Terminal>(x => x.ReportPrinterId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Printer, Resources.Terminal)
+                : Dao.Exists<Terminal>(x => x.TransactionPrinterId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Printer, Resources.Terminal)
+                : Dao.Exists<PrinterMap>(x => x.PrinterId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Printer, Resources.PrintJob)
+                : "";
         }
     }
 
@@ -48,11 +48,11 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(PrinterTemplate model)
         {
-            if (Dao.Exists<PrinterMap>(y => y.PrinterTemplateId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.PrinterTemplate, Resources.PrintJob);
-            if (Dao.Exists<AccountTransactionDocumentType>(y => y.PrinterTemplateId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.PrinterTemplate, Resources.AccountTransactionDocument);
-            return "";
+            return Dao.Exists<PrinterMap>(y => y.PrinterTemplateId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.PrinterTemplate, Resources.PrintJob)
+                : Dao.Exists<AccountTransactionDocumentType>(y => y.PrinterTemplateId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.PrinterTemplate, Resources.AccountTransactionDocument)
+                : "";
         }
     }
 }

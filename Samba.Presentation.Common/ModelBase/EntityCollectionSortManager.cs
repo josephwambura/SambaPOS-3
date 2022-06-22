@@ -13,11 +13,7 @@ namespace Samba.Presentation.Common.ModelBase
         public static bool GetOrderByDesc<T>()
         {
             var typeName = (typeof(T)).Name;
-            if (!_items.ContainsKey(typeName))
-            {
-                return false;
-            }
-            return _items[typeName];
+            return _items.ContainsKey(typeName) && _items[typeName];
         }
 
         public static void SetOrderByDesc<T>(bool value)

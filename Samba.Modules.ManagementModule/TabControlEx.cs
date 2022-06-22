@@ -146,13 +146,15 @@ namespace Samba.Modules.ManagementModule
             }
 
             // the actual child to be added.  cp.Tag is a reference to the TabItem
-            cp = new ContentPresenter();
-            cp.Content = (item is TabItem) ? (item as TabItem).Content : item;
-            cp.ContentTemplate = this.SelectedContentTemplate;
-            cp.ContentTemplateSelector = this.SelectedContentTemplateSelector;
-            cp.ContentStringFormat = this.SelectedContentStringFormat;
-            cp.Visibility = Visibility.Collapsed;
-            cp.Tag = (item is TabItem) ? item : (this.ItemContainerGenerator.ContainerFromItem(item));
+            cp = new ContentPresenter
+            {
+                Content = (item is TabItem) ? (item as TabItem).Content : item,
+                ContentTemplate = this.SelectedContentTemplate,
+                ContentTemplateSelector = this.SelectedContentTemplateSelector,
+                ContentStringFormat = this.SelectedContentStringFormat,
+                Visibility = Visibility.Collapsed,
+                Tag = (item is TabItem) ? item : (this.ItemContainerGenerator.ContainerFromItem(item))
+            };
             _itemsHolder.Children.Add(cp);
             return cp;
         }

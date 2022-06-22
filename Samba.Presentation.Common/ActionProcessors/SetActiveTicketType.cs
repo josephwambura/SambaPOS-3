@@ -28,18 +28,9 @@ namespace Samba.Presentation.Common.ActionProcessors
         {
             var ticketTypeName = actionData.GetAsString("TicketTypeName");
             var ticketType = _cacheService.GetTicketTypes().SingleOrDefault(y => y.Name == ticketTypeName);
-            if (ticketType != null)
-            {
-                _applicationState.TempTicketType = ticketType;
-            }
-            else if (_applicationState.SelectedEntityScreen != null && _applicationState.SelectedEntityScreen.TicketTypeId != 0)
-            {
-                _applicationState.TempTicketType = _cacheService.GetTicketTypeById(_applicationState.SelectedEntityScreen.TicketTypeId);
-            }
-            else
-            {
-                _applicationState.TempTicketType = _cacheService.GetTicketTypeById(_applicationState.CurrentDepartment.TicketTypeId);
-            }
+            _applicationState.TempTicketType = ticketType ?? (_applicationState.SelectedEntityScreen != null && _applicationState.SelectedEntityScreen.TicketTypeId != 0
+                    ? _cacheService.GetTicketTypeById(_applicationState.SelectedEntityScreen.TicketTypeId)
+                    : _cacheService.GetTicketTypeById(_applicationState.CurrentDepartment.TicketTypeId));
         }
 
         protected override object GetDefaultData()

@@ -84,17 +84,18 @@ namespace Samba.Modules.InventoryModule
 
         private ObservableCollection<CostItemViewModel> CreateCostItems()
         {
-            if (SelectedWarehouseConsumption == null) return null;
-            return
-                new ObservableCollection<CostItemViewModel>(
+            return SelectedWarehouseConsumption == null
+                ? null
+                : new ObservableCollection<CostItemViewModel>(
                     SelectedWarehouseConsumption.CostItems.Select(
                         x => new CostItemViewModel(x, _cacheService.GetMenuItem(y => y.Id == x.MenuItemId))));
         }
 
         private ObservableCollection<PeriodicConsumptionItemViewModel> CreatePeriodicConsumptionItems()
         {
-            if (SelectedWarehouseConsumption == null) return null;
-            return new ObservableCollection<PeriodicConsumptionItemViewModel>(
+            return SelectedWarehouseConsumption == null
+                ? null
+                : new ObservableCollection<PeriodicConsumptionItemViewModel>(
                     SelectedWarehouseConsumption.PeriodicConsumptionItems.Select(
                         x => new PeriodicConsumptionItemViewModel(x)));
         }

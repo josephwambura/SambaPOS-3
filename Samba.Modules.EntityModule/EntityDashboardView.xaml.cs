@@ -56,9 +56,11 @@ namespace Samba.Modules.EntityModule
             miAddWidget.Items.Clear();
             foreach (var creator in WidgetCreatorRegistry.GetCreators())
             {
-                var menuItem = new MenuItem();
-                menuItem.Tag = creator.GetCreatorName();
-                menuItem.Header = creator.GetCreatorDescription();
+                var menuItem = new MenuItem
+                {
+                    Tag = creator.GetCreatorName(),
+                    Header = creator.GetCreatorDescription()
+                };
                 menuItem.Click += menuItem_Click;
                 miAddWidget.Items.Add(menuItem);
             }

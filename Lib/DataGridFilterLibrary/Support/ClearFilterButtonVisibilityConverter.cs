@@ -11,14 +11,7 @@ namespace DataGridFilterLibrary.Support
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((bool)values[0] && (bool)values[1])
-            {
-                return System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                return System.Windows.Visibility.Collapsed;
-            }
+            return (bool)values[0] && (bool)values[1] ? System.Windows.Visibility.Visible : (object)System.Windows.Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

@@ -16,7 +16,7 @@ namespace Samba.Modules.BasicReports
                 if (value != _selectedValue)
                 {
                     _selectedValue = value;
-                    if (ValueChanged != null) ValueChanged();
+                    ValueChanged?.Invoke();
                 }
             }
         }

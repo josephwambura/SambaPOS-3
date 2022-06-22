@@ -27,14 +27,16 @@ namespace Samba.MessagingServer
         {
             var port = Convert.ToInt32(edPort.Text);
             var serverProv = new BinaryServerFormatterSinkProvider
-                                 {
-                                     TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full
-                                 };
+            {
+                TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full
+            };
 
             var clientProv = new BinaryClientFormatterSinkProvider();
 
-            IDictionary props = new Hashtable();
-            props["port"] = port;
+            IDictionary props = new Hashtable
+            {
+                ["port"] = port
+            };
 
             _channel = new TcpChannel(props, clientProv, serverProv);
             ChannelServices.RegisterChannel(_channel, false);
@@ -77,9 +79,7 @@ namespace Samba.MessagingServer
             if (WindowState == FormWindowState.Minimized)
                 Hide();
             else
-            {
                 Show();
-            }
         }
 
         private void frmMain_Shown(object sender, EventArgs e)

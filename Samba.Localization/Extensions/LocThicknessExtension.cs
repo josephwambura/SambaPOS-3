@@ -42,22 +42,13 @@ namespace Samba.Localization.Extensions
         {
             object obj = base.ProvideValue(serviceProvider);
 
-            if (obj == null)
-            {
-                return null;
-            }
-
-            if (this.IsTypeOf(obj.GetType(), typeof(BaseLocalizeExtension<>)))
-            {
-                return obj;
-            }
-            
-            if (obj.GetType().Equals(typeof(string)))
-            {
-                return this.FormatOutput(obj);
-            }
-
-            throw new NotSupportedException(
+            return obj == null
+                ? null
+                : this.IsTypeOf(obj.GetType(), typeof(BaseLocalizeExtension<>))
+                ? obj
+                : obj.GetType().Equals(typeof(string))
+                ? this.FormatOutput(obj)
+                : throw new NotSupportedException(
                 string.Format(
                     "ResourceKey '{0}' returns '{1}' which is not type of double",
                     this.Key,

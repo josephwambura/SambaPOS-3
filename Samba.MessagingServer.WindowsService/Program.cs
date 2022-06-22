@@ -31,12 +31,12 @@ namespace Samba.MessagingServer.WindowsService
                 }
             }
             else
-        {
-            ServiceBase[] servicesToRun;
-            servicesToRun = new ServiceBase[] 
-            { new MessagingServer() };
-            ServiceBase.Run(servicesToRun);
+            {
+                ServiceBase[] servicesToRun;
+                servicesToRun = new ServiceBase[]
+                { new MessagingServer() };
+                ServiceBase.Run(servicesToRun);
+            }
         }
-    }
     }
 }

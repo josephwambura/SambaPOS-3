@@ -21,13 +21,13 @@ namespace Samba.Modules.LoginModule
         {
             get
             {
-                if (File.Exists(LocalSettings.LogoPath))
-                    return LocalSettings.LogoPath;
-                if (File.Exists(LocalSettings.DocumentPath + "\\Images\\logo.png"))
-                    return LocalSettings.DocumentPath + "\\Images\\logo.png";
-                if (File.Exists(LocalSettings.AppPath + "\\Images\\logo.png"))
-                    return LocalSettings.AppPath + "\\Images\\logo.png";
-                return LocalSettings.AppPath + "\\Images\\empty.png";
+                return File.Exists(LocalSettings.LogoPath)
+                    ? LocalSettings.LogoPath
+                    : File.Exists(LocalSettings.DocumentPath + "\\Images\\logo.png")
+                    ? LocalSettings.DocumentPath + "\\Images\\logo.png"
+                    : File.Exists(LocalSettings.AppPath + "\\Images\\logo.png")
+                    ? LocalSettings.AppPath + "\\Images\\logo.png"
+                    : LocalSettings.AppPath + "\\Images\\empty.png";
             }
             set { LocalSettings.LogoPath = value; }
         }
@@ -48,12 +48,9 @@ namespace Samba.Modules.LoginModule
 
         public string GetAdminPasswordHint()
         {
-            if ((GetDatabaseLabel() == "TX" || GetDatabaseLabel() == "CE") && _userService.IsDefaultUserConfigured)
-            {
-                return Resources.AdminPasswordHint;
-            }
-
-            return "";
+            return (GetDatabaseLabel() == "TX" || GetDatabaseLabel() == "CE") && _userService.IsDefaultUserConfigured
+                ? Resources.AdminPasswordHint
+                : "";
         }
     }
 }

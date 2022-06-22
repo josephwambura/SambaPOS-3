@@ -12,10 +12,11 @@ namespace Samba.Infrastructure.Helpers
 
         public static string Parse(string quantityFunc, string currentQuantity)
         {
-            if (!IsFunc(quantityFunc)) return quantityFunc;
-            int quantity;
-            if(!int.TryParse(currentQuantity, out quantity) && !string.IsNullOrEmpty(currentQuantity)) return quantityFunc;
-            return Parse(quantityFunc, quantity).ToString();
+            return !IsFunc(quantityFunc)
+                ? quantityFunc
+                : !int.TryParse(currentQuantity, out int quantity) && !string.IsNullOrEmpty(currentQuantity)
+                ? quantityFunc
+                : Parse(quantityFunc, quantity).ToString();
         }
 
         private static bool IsFunc(string quantityFunc)
@@ -35,28 +36,18 @@ namespace Samba.Infrastructure.Helpers
 
         private static Operations GetFunc(string quantityFunc)
         {
-            if (!IsFunc(quantityFunc)) return Operations.Set;
-            if (quantityFunc.StartsWith("+"))
-            {
-                return Operations.Add;
-            }
-            if (quantityFunc.StartsWith("-"))
-            {
-                return Operations.Subtract;
-            }
-            return Operations.Set;
+            return !IsFunc(quantityFunc)
+                ? Operations.Set
+                : quantityFunc.StartsWith("+") ? Operations.Add : quantityFunc.StartsWith("-") ? Operations.Subtract : Operations.Set;
         }
 
         public static int Parse(string quantityFunc, int currentQuantity)
         {
             if (string.IsNullOrEmpty(quantityFunc)) return 0;
-            int value;
             var operation = GetFunc(quantityFunc);
             var trimmed = quantityFunc.Trim('-', '+', ' ');
-            Int32.TryParse(trimmed, out value);
-            if (operation == Operations.Add) return currentQuantity + value;
-            if (operation == Operations.Subtract) return currentQuantity - value;
-            return value;
+            Int32.TryParse(trimmed, out int value);
+            return operation == Operations.Add ? currentQuantity + value : operation == Operations.Subtract ? currentQuantity - value : value;
         }
     }
 }

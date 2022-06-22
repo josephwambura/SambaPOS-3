@@ -69,12 +69,11 @@ namespace FlexButton
             {
                 l = (minColor + maxColor) / 2;
 
-                if (l < 0.5) s = (maxColor - minColor) / (maxColor + minColor);
-                else s = (maxColor - minColor) / (2.0f - maxColor - minColor);
+                s = l < 0.5 ? (maxColor - minColor) / (maxColor + minColor) : (maxColor - minColor) / (2.0f - maxColor - minColor);
 
-                if (r == maxColor) h = (g - b) / (maxColor - minColor);
-                else if (g == maxColor) h = 2.0f + (b - r) / (maxColor - minColor);
-                else h = 4.0f + (r - g) / (maxColor - minColor);
+                h = r == maxColor
+                    ? (g - b) / (maxColor - minColor)
+                    : g == maxColor ? 2.0f + (b - r) / (maxColor - minColor) : 4.0f + (r - g) / (maxColor - minColor);
 
                 h /= 6; //to bring it to a number between 0 and 1
                 if (h < 0) h++;
@@ -102,16 +101,7 @@ namespace FlexButton
             else
             {
                 //Set the temporary values      
-                double temp2;
-                if (l < 0.5)
-                {
-                    temp2 = l * (1 + s);
-                }
-                else
-                {
-                    temp2 = (l + s) - (l * s);
-                }
-
+                double temp2 = l < 0.5 ? l * (1 + s) : (l + s) - (l * s);
                 double temp1 = 2 * l - temp2;
                 double tempr = h + 1.0 / 3.0;
 
@@ -126,22 +116,19 @@ namespace FlexButton
                     tempb++;
 
                 //Red     
-                if (tempr < 1.0 / 6.0) r = temp1 + (temp2 - temp1) * 6.0 * tempr;
-                else if (tempr < 0.5) r = temp2;
-                else if (tempr < 2.0 / 3.0) r = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempr) * 6.0;
-                else r = temp1;
+                r = tempr < 1.0 / 6.0
+                    ? temp1 + (temp2 - temp1) * 6.0 * tempr
+                    : tempr < 0.5 ? temp2 : tempr < 2.0 / 3.0 ? temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempr) * 6.0 : temp1;
 
                 //Green       
-                if (tempg < 1.0 / 6.0) g = temp1 + (temp2 - temp1) * 6.0 * tempg;
-                else if (tempg < 0.5) g = temp2;
-                else if (tempg < 2.0 / 3.0) g = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempg) * 6.0;
-                else g = temp1;
+                g = tempg < 1.0 / 6.0
+                    ? temp1 + (temp2 - temp1) * 6.0 * tempg
+                    : tempg < 0.5 ? temp2 : tempg < 2.0 / 3.0 ? temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempg) * 6.0 : temp1;
 
                 //Blue    
-                if (tempb < 1.0 / 6.0) b = temp1 + (temp2 - temp1) * 6.0 * tempb;
-                else if (tempb < 0.5) b = temp2;
-                else if (tempb < 2.0 / 3.0) b = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempb) * 6.0;
-                else b = temp1;
+                b = tempb < 1.0 / 6.0
+                    ? temp1 + (temp2 - temp1) * 6.0 * tempb
+                    : tempb < 0.5 ? temp2 : tempb < 2.0 / 3.0 ? temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempb) * 6.0 : temp1;
             }
 
             return Color.FromRgb(Convert.ToByte(r * 255), Convert.ToByte(g * 255), Convert.ToByte(b * 255));

@@ -101,7 +101,7 @@ namespace Samba.Modules.PaymentModule
             foreach (var commandButtonViewModel in ForeignCurrencyButtons)
             {
                 var format = commandButtonViewModel.Parameter.CurrencySymbol;
-                if (!format.Contains("{0")) format = format + " {0:N2}";
+                if (!format.Contains("{0")) format += " {0:N2}";
                 var pm = _tenderedValueViewModel.GetPaymentDueValue() / commandButtonViewModel.Parameter.ExchangeRate;
                 commandButtonViewModel.Caption = string.Format(format, pm);
             }

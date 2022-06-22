@@ -106,7 +106,7 @@ namespace Samba.Modules.PosModule
 
         public Department SelectedDepartment
         {
-            get { return _applicationState.CurrentDepartment != null ? _applicationState.CurrentDepartment.Model : null; }
+            get { return _applicationState.CurrentDepartment?.Model; }
         }
 
         public bool IsPortrait { get { return !_applicationState.IsLandscape; } }
@@ -433,8 +433,7 @@ namespace Samba.Modules.PosModule
 
         private void OnChangePrice(string obj)
         {
-            decimal price;
-            decimal.TryParse(_applicationState.NumberPadValue, out price);
+            decimal.TryParse(_applicationState.NumberPadValue, out decimal price);
             if (price <= 0)
             {
                 InteractionService.UserIntraction.GiveFeedback(Resources.ForChangingPriceTypeAPrice);
@@ -470,11 +469,11 @@ namespace Samba.Modules.PosModule
 
         private bool CanMoveOrders(string arg)
         {
-            if (SelectedTicket.IsLocked || SelectedTicket.IsClosed) return false;
-            if (!SelectedTicket.CanRemoveSelectedOrders(SelectedOrders)) return false;
-            if (SelectedOrders.Any(x => x.Id == 0)) return false;
-            if (SelectedOrders.Any(x => !x.Locked) && _userService.IsUserPermittedFor(PermissionNames.MoveUnlockedOrders)) return true;
-            return _userService.IsUserPermittedFor(PermissionNames.MoveOrders);
+            return !SelectedTicket.IsLocked && !SelectedTicket.IsClosed
+&& (SelectedTicket.CanRemoveSelectedOrders(SelectedOrders)
+&& !SelectedOrders.Any(x => x.Id == 0)
+&& (SelectedOrders.Any(x => !x.Locked) && _userService.IsUserPermittedFor(PermissionNames.MoveUnlockedOrders)
+|| _userService.IsUserPermittedFor(PermissionNames.MoveOrders)));
         }
 
         private bool CanEditTicketNote(string arg)

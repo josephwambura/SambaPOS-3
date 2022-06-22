@@ -28,8 +28,7 @@ namespace Samba.Modules.TaskModule.Widgets.TaskEditor
 
         protected virtual void OnTaskAdded()
         {
-            EventHandler handler = TaskAdded;
-            if (handler != null) handler(this, EventArgs.Empty);
+            TaskAdded?.Invoke(this, EventArgs.Empty);
         }
 
         public TaskEditorViewModel(Widget widget, IApplicationState applicationState, ITaskService taskService,
@@ -68,7 +67,7 @@ namespace Samba.Modules.TaskModule.Widgets.TaskEditor
         [Browsable(false)]
         public IEnumerable<TaskCustomFieldEditorModel> CustomFields
         {
-            get { return _customFields ?? (_customFields = TaskType != null ? TaskType.TaskCustomFields.Select(x => new TaskCustomFieldEditorModel(x)).ToList() : null); }
+            get { return _customFields ?? (_customFields = TaskType?.TaskCustomFields.Select(x => new TaskCustomFieldEditorModel(x)).ToList()); }
         }
 
         private string _newTask;

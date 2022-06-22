@@ -214,15 +214,15 @@ namespace Samba.Localization.Extensions
                             if (nachkommastellen % 2 == 0)
                             {
                                 ++zweier;
-                                nachkommastellen = nachkommastellen / 2;
-                                ggT = ggT * 2;
+                                nachkommastellen /= 2;
+                                ggT *= 2;
                             }
 
                             if (nachkommastellen % 5 == 0)
                             {
                                 ++fuenfer;
-                                nachkommastellen = nachkommastellen / 5;
-                                ggT = ggT * 5;
+                                nachkommastellen /= 5;
+                                ggT *= 5;
                             }
                         }
 

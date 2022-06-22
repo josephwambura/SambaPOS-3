@@ -224,11 +224,8 @@ namespace Samba.Infrastructure.Data.Serializer
         /// <returns></returns>
         protected bool CheckPropertyHasToBeSerialized(PropertyInfo pi)
         {
-            if (_serializationIgnoredAttributeType != null)
-            {
-                return pi.GetCustomAttributes(_serializationIgnoredAttributeType, true).Length == 0;
-            }
-            return true;
+            return _serializationIgnoredAttributeType == null
+|| pi.GetCustomAttributes(_serializationIgnoredAttributeType, true).Length == 0;
         }
 
         /// <summary>

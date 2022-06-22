@@ -202,9 +202,7 @@ namespace Samba.Infrastructure.Data.Text
 
         public IEnumerable<T> Query<T>(Expression<Func<T, bool>> predictate, params Expression<Func<T, object>>[] includes) where T : class
         {
-            if (predictate != null)
-                return All(predictate);
-            return All<T>();
+            return predictate != null ? All(predictate) : All<T>();
         }
 
         public IEnumerable<string> Distinct<T>(Expression<Func<T, string>> expression) where T : class
@@ -239,23 +237,21 @@ namespace Samba.Infrastructure.Data.Text
 
         public IEnumerable<TResult> Select<TSource, TResult>(Expression<Func<TSource, TResult>> expression, Expression<Func<TSource, bool>> prediction, params Expression<Func<TSource, object>>[] includes) where TSource : class
         {
-            if (prediction != null)
-                return _storage.GetItems<TSource>().Where(prediction.Compile()).Select(expression.Compile());
-            return _storage.GetItems<TSource>().Select(expression.Compile());
+            return prediction != null
+                ? _storage.GetItems<TSource>().Where(prediction.Compile()).Select(expression.Compile())
+                : _storage.GetItems<TSource>().Select(expression.Compile());
         }
 
         public int Count<T>(Expression<Func<T, bool>> predictate) where T : class
         {
-            if (predictate != null)
-                return _storage.GetItems<T>().Count(predictate.Compile());
-            return _storage.GetItems<T>().Count();
+            return predictate != null ? _storage.GetItems<T>().Count(predictate.Compile()) : _storage.GetItems<T>().Count();
         }
 
         public decimal Sum<T>(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>> predictate) where T : class
         {
-            if (predictate != null)
-                return _storage.GetItems<T>().Where(predictate.Compile()).Sum(selector.Compile());
-            return _storage.GetItems<T>().Sum(selector.Compile());
+            return predictate != null
+                ? _storage.GetItems<T>().Where(predictate.Compile()).Sum(selector.Compile())
+                : _storage.GetItems<T>().Sum(selector.Compile());
         }
 
         public T Last<T>(Expression<Func<T, bool>> predictate, Expression<Func<T, object>>[] includes) where T : class,IEntityClass

@@ -98,16 +98,16 @@ namespace Samba.Modules.PosModule
         {
             get
             {
-                if (_currentScreenMenu == null) return 25;
-                return _currentScreenMenu.CategoryColumnWidthRate > 10 ? _currentScreenMenu.CategoryColumnWidthRate : 10;
+                return _currentScreenMenu == null
+                    ? 25
+                    : _currentScreenMenu.CategoryColumnWidthRate > 10 ? _currentScreenMenu.CategoryColumnWidthRate : 10;
             }
         }
         public int CategoryColumnCount
         {
             get
             {
-                if (_currentScreenMenu == null) return 1;
-                return _currentScreenMenu.CategoryColumnCount > 1 ? _currentScreenMenu.CategoryColumnCount : 1;
+                return _currentScreenMenu == null ? 1 : _currentScreenMenu.CategoryColumnCount > 1 ? _currentScreenMenu.CategoryColumnCount : 1;
             }
         }
 
@@ -232,8 +232,7 @@ namespace Samba.Modules.PosModule
                     var bc = insertedData.Substring(weightBarcodePrefix.Length, itemLength);
                     if (!string.IsNullOrEmpty(_settingService.ProgramSettings.WeightBarcodeItemFormat))
                     {
-                        int integerValue;
-                        int.TryParse(bc, out integerValue);
+                        int.TryParse(bc, out int integerValue);
                         if (integerValue > 0)
                             bc = integerValue.ToString(_settingService.ProgramSettings.WeightBarcodeItemFormat);
                     }
@@ -358,8 +357,9 @@ namespace Samba.Modules.PosModule
 
         private string GetCategorySubButtonColor(string name, ScreenMenuCategory category)
         {
-            if (string.IsNullOrEmpty(category.SubButtonColorDef) || !category.SubButtonColorDef.Contains(name + "=")) return category.MainButtonColor;
-            return category.SubButtonColorDef;
+            return string.IsNullOrEmpty(category.SubButtonColorDef) || !category.SubButtonColorDef.Contains(name + "=")
+                ? category.MainButtonColor
+                : category.SubButtonColorDef;
         }
 
         private void OnSubCategoryCommand(ScreenSubCategoryButton obj)

@@ -39,11 +39,7 @@ namespace Samba.ApiServer.Controllers
         {
             ValidateToken();
             Entity product = _entityDao.GetEntityById(id);
-            if (product == null)
-            {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            }
-            return product;
+            return product ?? throw new HttpResponseException(HttpStatusCode.NotFound);
         }
 
     }

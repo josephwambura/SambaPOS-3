@@ -27,10 +27,7 @@ namespace Samba.Modules.UserModule
             get { return _permission.Value == (int)PermissionValue.Enabled; }
             set
             {
-                if (value)
-                    _permission.Value = (int)PermissionValue.Enabled;
-                else
-                    _permission.Value = (int)PermissionValue.Disabled;
+                _permission.Value = value ? (int)PermissionValue.Enabled : (int)PermissionValue.Disabled;
             }
         }
     }

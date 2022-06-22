@@ -29,9 +29,7 @@ namespace Samba.Presentation.Services.Implementations.TaskModule.Parsers
         public override string GetValue(string part)
         {
             var result = _expressionService.Eval(part);
-            if (string.IsNullOrEmpty(result)) return "@" + part;
-            if (IsDate(result)) return "@" + result;
-            return result;
+            return string.IsNullOrEmpty(result) ? "@" + part : IsDate(result) ? "@" + result : result;
         }
 
         private bool IsDate(string result)

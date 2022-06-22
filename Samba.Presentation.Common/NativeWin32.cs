@@ -235,11 +235,7 @@ namespace Samba.Presentation.Common
             /// <param name="obj">Another object to compare to. </param><filterpriority>2</filterpriority>
             public override bool Equals(object obj)
             {
-                if (obj is RECT)
-                {
-                    return Equals((RECT)obj);
-                }
-                return base.Equals(obj);
+                return obj is RECT ? Equals((RECT)obj) : base.Equals(obj);
             }
         }
 

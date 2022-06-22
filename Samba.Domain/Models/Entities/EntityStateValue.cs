@@ -52,11 +52,12 @@ namespace Samba.Domain.Models.Entities
 
         public bool IsInState(string stateName, string state)
         {
-            if (string.IsNullOrEmpty(stateName)) return true;
-            if (stateName == "*") return EntityStateValues.Any(x => x.State == state);
-            if (string.IsNullOrEmpty(state)) return EntityStateValues.All(x => x.StateName != stateName);
-            return EntityStateValues.Any(x => x.StateName == stateName && x.State == state);
-
+            return string.IsNullOrEmpty(stateName)
+|| (stateName == "*"
+                ? EntityStateValues.Any(x => x.State == state)
+                : string.IsNullOrEmpty(state)
+                ? EntityStateValues.All(x => x.StateName != stateName)
+                : EntityStateValues.Any(x => x.StateName == stateName && x.State == state));
         }
 
         public int GetStateQuantity(string stateName)

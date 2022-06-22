@@ -38,12 +38,14 @@ namespace Samba.Modules.CidMonitor
         {
             try
             {
-                var serialPort = new SerialPort();
-                serialPort.PortName = Settings.PortName;
-                serialPort.BaudRate = 1200;
-                serialPort.DataBits = 8;
-                serialPort.StopBits = StopBits.One;
-                serialPort.Parity = Parity.None;
+                var serialPort = new SerialPort
+                {
+                    PortName = Settings.PortName,
+                    BaudRate = 1200,
+                    DataBits = 8,
+                    StopBits = StopBits.One,
+                    Parity = Parity.None
+                };
                 serialPort.DataReceived += serialPort_DataReceived;
                 serialPort.ReadTimeout = 100; // Required for end of packet Timeout notification
                 serialPort.Open();

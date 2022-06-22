@@ -105,7 +105,7 @@ namespace Samba.Persistance.Implementations
         {
             using (var w = WorkspaceFactory.Create())
             {
-                var document = documentType.CreateDocument(selectedAccount, description, amount, exchangeRate, accounts != null ? accounts.ToList() : null, currencies.ToList());
+                var document = documentType.CreateDocument(selectedAccount, description, amount, exchangeRate, accounts?.ToList(), currencies.ToList());
                 w.Add(document);
                 w.CommitChanges();
                 return document;
@@ -166,11 +166,11 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(AccountType model)
         {
-            if (Dao.Exists<Account>(x => x.AccountTypeId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountType, Resources.Account);
-            if (Dao.Exists<AccountTransactionDocumentType>(x => x.MasterAccountTypeId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountType, Resources.DocumentType);
-            return "";
+            return Dao.Exists<Account>(x => x.AccountTypeId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountType, Resources.Account)
+                : Dao.Exists<AccountTransactionDocumentType>(x => x.MasterAccountTypeId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountType, Resources.DocumentType)
+                : "";
         }
     }
 
@@ -178,9 +178,9 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(AccountTransactionDocumentType model)
         {
-            if (Dao.Exists<AccountTransactionDocument>(x => x.DocumentTypeId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.DocumentType, Resources.AccountTransactionDocument);
-            return "";
+            return Dao.Exists<AccountTransactionDocument>(x => x.DocumentTypeId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.DocumentType, Resources.AccountTransactionDocument)
+                : "";
         }
     }
 
@@ -188,30 +188,19 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(AccountTransactionType model)
         {
-            if (Dao.Exists<AccountTransactionDocumentType>(x => x.TransactionTypes.Any(y => y.Id == model.Id)))
-            {
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
-                                     Resources.AccountTransactionDocument);
-            }
-
-            if (Dao.Exists<PaymentType>(x => x.AccountTransactionType.Id == model.Id))
-            {
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
-                                     Resources.PaymentType);
-            }
-
-            if (Dao.Exists<CalculationType>(x => x.AccountTransactionType.Id == model.Id))
-            {
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
-                                     Resources.CalculationType);
-            }
-
-            if (Dao.Exists<TicketType>(x => x.SaleTransactionType.Id == model.Id))
-            {
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
-                                     Resources.TicketType);
-            }
-            return "";
+            return Dao.Exists<AccountTransactionDocumentType>(x => x.TransactionTypes.Any(y => y.Id == model.Id))
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
+                                     Resources.AccountTransactionDocument)
+                : Dao.Exists<PaymentType>(x => x.AccountTransactionType.Id == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
+                                     Resources.PaymentType)
+                : Dao.Exists<CalculationType>(x => x.AccountTransactionType.Id == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
+                                     Resources.CalculationType)
+                : Dao.Exists<TicketType>(x => x.SaleTransactionType.Id == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.AccountTransactionType,
+                                     Resources.TicketType)
+                : "";
         }
     }
 
@@ -219,13 +208,13 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(Account model)
         {
-            if (Dao.Exists<PaymentType>(x => x.Account.Id == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Account, Resources.PaymentType);
-            if (Dao.Exists<Entity>(x => x.AccountId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Account, Resources.Entity);
-            if (Dao.Exists<AccountTransactionValue>(x => x.AccountId == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.Account, Resources.AccountTransaction);
-            return "";
+            return Dao.Exists<PaymentType>(x => x.Account.Id == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Account, Resources.PaymentType)
+                : Dao.Exists<Entity>(x => x.AccountId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Account, Resources.Entity)
+                : Dao.Exists<AccountTransactionValue>(x => x.AccountId == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.Account, Resources.AccountTransaction)
+                : "";
         }
     }
 }

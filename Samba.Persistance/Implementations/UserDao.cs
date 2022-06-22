@@ -40,9 +40,7 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(User model)
         {
-            if (Dao.Exists<User>(x => x.PinCode == model.PinCode && x.Id != model.Id))
-                return Resources.SaveErrorThisPinCodeInUse;
-            return "";
+            return Dao.Exists<User>(x => x.PinCode == model.PinCode && x.Id != model.Id) ? Resources.SaveErrorThisPinCodeInUse : "";
         }
     }
 
@@ -50,11 +48,13 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(User model)
         {
-            if (model.UserRole.IsAdmin) return Resources.DeleteErrorAdminUser;
-            if (Dao.Count<User>() == 1) return Resources.DeleteErrorLastUser;
-            if (Dao.Exists<Order>(x => x.CreatingUserName == model.Name))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.User, Resources.Order);
-            return "";
+            return model.UserRole.IsAdmin
+                ? Resources.DeleteErrorAdminUser
+                : Dao.Count<User>() == 1
+                ? Resources.DeleteErrorLastUser
+                : Dao.Exists<Order>(x => x.CreatingUserName == model.Name)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.User, Resources.Order)
+                : "";
         }
     }
 
@@ -62,10 +62,11 @@ namespace Samba.Persistance.Implementations
     {
         public override string GetErrorMessage(UserRole model)
         {
-            if (model.Id == 1 || model.IsAdmin) return string.Format(Resources.CantDelete_f, Resources.AdminRole);
-            if (Dao.Exists<User>(y => y.UserRole.Id == model.Id))
-                return string.Format(Resources.DeleteErrorUsedBy_f, Resources.UserRole, Resources.User);
-            return "";
+            return model.Id == 1 || model.IsAdmin
+                ? string.Format(Resources.CantDelete_f, Resources.AdminRole)
+                : Dao.Exists<User>(y => y.UserRole.Id == model.Id)
+                ? string.Format(Resources.DeleteErrorUsedBy_f, Resources.UserRole, Resources.User)
+                : "";
         }
     }
 }

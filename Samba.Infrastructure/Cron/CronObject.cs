@@ -76,10 +76,7 @@ namespace Samba.Infrastructure.Cron
 
             // Raise the started event.
             //
-            if (OnStarted != null)
-            {
-                OnStarted(this, new CronEventArgs { CronObject = this });
-            }
+            OnStarted?.Invoke(this, new CronEventArgs { CronObject = this });
 
             return true;
         }
@@ -113,19 +110,13 @@ namespace Samba.Infrastructure.Cron
 
                     // Raise the thread abort event.
                     //
-                    if (OnThreadAbort != null)
-                    {
-                        OnThreadAbort(this, new CronEventArgs { CronObject = this });
-                    }
+                    OnThreadAbort?.Invoke(this, new CronEventArgs { CronObject = this });
                 }
             }
 
             // Raise the stopped event.
             //
-            if (OnStopped != null)
-            {
-                OnStopped(this, new CronEventArgs { CronObject = this });
-            }
+            OnStopped?.Invoke(this, new CronEventArgs { CronObject = this });
             return true;
         }
 
@@ -157,10 +148,7 @@ namespace Samba.Infrastructure.Cron
                 {
                     // Timespan is up...raise the trigger event
                     //
-                    if (OnCronTrigger != null)
-                    {
-                        OnCronTrigger(this, new CronEventArgs { CronObject = this });
-                    }
+                    OnCronTrigger?.Invoke(this, new CronEventArgs { CronObject = this });
 
                     // Update the last trigger time.
                     //

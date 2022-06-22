@@ -26,15 +26,7 @@ namespace Samba.Presentation.Controls.ListViewEx
             // Get the index of a ListViewItem
 
             int index = listView.ItemContainerGenerator.IndexFromContainer(item);
-            if (index % 2 == 0)
-            {
-                return Brushes.GhostWhite;
-            }
-
-            else
-            {
-                return Brushes.White;
-            }
+            return index % 2 == 0 ? Brushes.GhostWhite : (object)Brushes.White;
 
         }
 

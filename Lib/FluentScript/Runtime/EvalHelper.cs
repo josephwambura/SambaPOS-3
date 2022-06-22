@@ -87,10 +87,12 @@ namespace Fluentscript.Lib.Runtime
             }
 
             var relativeValue = units.ConvertToRelativeValue(baseUnitsValue, left.SubGroup, null);
-            var result = new LUnit(relativeValue);
-            result.BaseValue = baseUnitsValue;
-            result.Group = left.Group;
-            result.SubGroup = left.SubGroup;
+            var result = new LUnit(relativeValue)
+            {
+                BaseValue = baseUnitsValue,
+                Group = left.Group,
+                SubGroup = left.SubGroup
+            };
             //result.Value = relativeValue;
             var lclass = LangTypeHelper.ConvertToLangUnit(result);
             return lclass;
@@ -165,23 +167,22 @@ namespace Fluentscript.Lib.Runtime
             }
             else if (op == Operator.PlusEqual)
             {
-                val = val + increment;
+                val += increment;
             }
             else if (op == Operator.MinusEqual)
             {
-                val = val - increment;
+                val -= increment;
             }
             else if (op == Operator.MultEqual)
             {
-                val = val * increment;
+                val *= increment;
             }
             else if (op == Operator.DivEqual)
             {
-                val = val / increment;
+                val /= increment;
             }
             return new LNumber(val);
         }
-
 
         /// <summary>
         /// Compares null values.
@@ -192,16 +193,9 @@ namespace Fluentscript.Lib.Runtime
         /// <returns></returns>
         public static LBool CompareNull(object left, object right, Operator op)
         {
-            var result = false;
-            if (left == LObjects.Null && right == LObjects.Null) 
-                result = op == Operator.EqualEqual;
-            else 
-                result = op == Operator.NotEqual;
-
+            var result = left == LObjects.Null && right == LObjects.Null ? op == Operator.EqualEqual : op == Operator.NotEqual;
             return new LBool(result);
         }
-
-
 
         /// <summary>
         /// Evaluates a math expression of 2 time spans.
@@ -540,7 +534,7 @@ namespace Fluentscript.Lib.Runtime
             if(result.Type == LTypes.Number)
             {
                 var retVal = ((LNumber) result).Value;
-                retVal = retVal*-1;
+                retVal *= -1;
                 return new LNumber(retVal);
             }
             throw ExceptionHelper.BuildRunTimeException(expr, "Can only convert a number to a negative value");

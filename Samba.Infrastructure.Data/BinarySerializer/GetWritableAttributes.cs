@@ -66,9 +66,8 @@ namespace Samba.Infrastructure.Data.BinarySerializer
             lock (PropertyAccess)
             {
                 var index = (SilverlightSerializer.IsChecksum ? 1 : 0) + (SilverlightSerializer.IsChecksum && SilverlightSerializer.IgnoreIds ? 1 : 0);
-                
-                GetSet[][][] collection;
-                if (!PropertyAccess.TryGetValue(type, out collection))
+
+                if (!PropertyAccess.TryGetValue(type, out GetSet[][][] collection))
                 {
                     collection = new GetSet[3][][];
                     PropertyAccess[type] = collection;

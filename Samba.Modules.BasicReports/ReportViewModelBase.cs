@@ -119,12 +119,12 @@ namespace Samba.Modules.BasicReports
             defaultName = defaultName.Replace(".", "_");
 
             var saveFileDialog = new SaveFileDialog
-                                     {
-                                         InitialDirectory = LocalSettings.DocumentPath,
-                                         FileName = defaultName,
-                                         DefaultExt = extenstion,
-                                         Filter = string.Format("{0} File (*{1})|*{1}", filterDesc, extenstion)
-                                     };
+            {
+                InitialDirectory = LocalSettings.DocumentPath,
+                FileName = defaultName,
+                DefaultExt = extenstion,
+                Filter = string.Format("{0} File (*{1})|*{1}", filterDesc, extenstion)
+            };
 
 
             var result = saveFileDialog.ShowDialog();
@@ -141,13 +141,9 @@ namespace Samba.Modules.BasicReports
         {
             var sw = FilterGroups[0].SelectedValue as WorkPeriod;
             if (sw == null) return;
-            if (ReportContext.CurrentWorkPeriod != null && (ReportContext.StartDate != sw.StartDate || ReportContext.EndDate != sw.EndDate))
-            {
-                ReportContext.CurrentWorkPeriod =
-                    ReportContext.CreateCustomWorkPeriod("", ReportContext.StartDate, ReportContext.EndDate);
-            }
-            else ReportContext.CurrentWorkPeriod =
-                FilterGroups[0].SelectedValue as WorkPeriod;
+            ReportContext.CurrentWorkPeriod = ReportContext.CurrentWorkPeriod != null && (ReportContext.StartDate != sw.StartDate || ReportContext.EndDate != sw.EndDate)
+                ? ReportContext.CreateCustomWorkPeriod("", ReportContext.StartDate, ReportContext.EndDate)
+                : FilterGroups[0].SelectedValue as WorkPeriod;
             RefreshReport();
         }
 
@@ -191,7 +187,7 @@ namespace Samba.Modules.BasicReports
 
             if (ReportContext.CurrentWorkPeriod == null) return;
             var memStream = new MemoryStream();
-    
+
             using (var worker = new BackgroundWorker())
             {
                 worker.DoWork += delegate
@@ -204,7 +200,7 @@ namespace Samba.Modules.BasicReports
                 };
 
                 worker.RunWorkerCompleted +=
-                    delegate(object sender, RunWorkerCompletedEventArgs eventArgs)
+                    delegate (object sender, RunWorkerCompletedEventArgs eventArgs)
                     {
                         if (eventArgs.Error != null)
                         {

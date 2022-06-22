@@ -20,17 +20,16 @@ namespace Samba.Domain.Models.Accounts
 
         public bool CanMakeAccountTransaction(Account selectedAccount)
         {
-            if (DefaultSourceAccountId == selectedAccount.Id || DefaultTargetAccountId == selectedAccount.Id) return true;
-            if (SourceAccountTypeId == selectedAccount.AccountTypeId && DefaultSourceAccountId == 0) return true;
-            if (TargetAccountTypeId == selectedAccount.AccountTypeId && DefaultTargetAccountId == 0) return true;
-            return false;
+            return DefaultSourceAccountId == selectedAccount.Id || DefaultTargetAccountId == selectedAccount.Id
+|| SourceAccountTypeId == selectedAccount.AccountTypeId && DefaultSourceAccountId == 0
+|| TargetAccountTypeId == selectedAccount.AccountTypeId && DefaultTargetAccountId == 0;
         }
 
         public int GetDefaultTransactionType()
         {
-            if (DefaultSourceAccountId == 0 && DefaultTargetAccountId != 0) return SourceAccountTypeId;
-            if (DefaultSourceAccountId != 0 && DefaultTargetAccountId == 0) return TargetAccountTypeId;
-            return 0;
+            return DefaultSourceAccountId == 0 && DefaultTargetAccountId != 0
+                ? SourceAccountTypeId
+                : DefaultSourceAccountId != 0 && DefaultTargetAccountId == 0 ? TargetAccountTypeId : 0;
         }
     }
 }

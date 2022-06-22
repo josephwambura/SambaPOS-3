@@ -45,10 +45,7 @@ namespace Samba.Infrastructure.Data.Serializer
         {
             get
             {
-                if (typedictionary != null && typedictionary.Count > 0)
-                    return true;
-
-                return false;
+                return typedictionary != null && typedictionary.Count > 0;
             }
         }
 
@@ -613,20 +610,12 @@ namespace Samba.Infrastructure.Data.Serializer
 
                 obj = Activator.CreateInstance(type);
 
-                if (obj == null)
-                    throw new Exception("Instance could not be created.");
-
-                return obj;
+                return obj ?? throw new Exception("Instance could not be created.");
             }
             catch (Exception e)
             {
                 string msg = "Creation of an instance failed. Type: " + info.Type + " Assembly: " + info.Assembly + " Cause: " + e.Message;
-                if (IgnoreCreationErrors)
-                {
-                    return null;
-                }
-                else
-                    throw new Exception(msg, e);
+                return IgnoreCreationErrors ? (object)null : throw new Exception(msg, e);
             }
         }
 
@@ -793,10 +782,7 @@ namespace Samba.Infrastructure.Data.Serializer
                 return false;
 
             XmlNode binnode = ctornode.SelectSingleNode(taglib.BINARY_DATA_TAG);
-            if (binnode == null)
-                return false;
-
-            return true;
+            return binnode != null;
         }
 
         /// <summary>
@@ -806,9 +792,8 @@ namespace Samba.Infrastructure.Data.Serializer
         /// <returns></returns>
         protected TypeConverter GetConverter(Type type)
         {
-            TypeConverter retConverter = null;
 
-            if (!typeConverterCache.TryGetValue(type, out retConverter))
+            if (!typeConverterCache.TryGetValue(type, out TypeConverter retConverter))
             {
                 retConverter = TypeDescriptor.GetConverter(type);
                 typeConverterCache[type] = retConverter;

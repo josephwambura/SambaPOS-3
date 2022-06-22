@@ -129,9 +129,9 @@ namespace Samba.Modules.TicketModule
                     return Resources.NumericTagsShouldBeNumbersErrorMessage;
                 }
             }
-            if (TicketTags.Count != TicketTags.GroupBy(x => x.Name.ToLower()).Count())
-                return Resources.TagsShouldBeUniqueErrorMessage;
-            return base.GetSaveErrorMessage();
+            return TicketTags.Count != TicketTags.GroupBy(x => x.Name.ToLower()).Count()
+                ? Resources.TagsShouldBeUniqueErrorMessage
+                : base.GetSaveErrorMessage();
         }
 
         protected override void Initialize()

@@ -139,7 +139,8 @@ namespace Samba.Domain.Tests
                                     .AddTaxTemplate(testContext.TaxTemplate)
                                     .WithAccountTransactionType(testContext.AccountTransactionType)
                                     .Build();
-            Assert.True(order.TaxValues.Any());
+            //Assert.True(order.TaxValues.Any());
+            Assert.True(order.GetTaxValues().Any());
         }
 
         [Test]
@@ -210,16 +211,18 @@ namespace Samba.Domain.Tests
     {
         public static OrderBuilderTestContext CreateDefault()
         {
-            var result = new OrderBuilderTestContext();
-            result.Hamburger = new MenuItem { Name = "Hamburger", Id = 5 };
-            result.HamburgerPortion = new MenuItemPortion { MenuItemId = 5, Id = 2, Name = "Standard", Price = 5 };
+            var result = new OrderBuilderTestContext
+            {
+                Hamburger = new MenuItem { Name = "Hamburger", Id = 5 },
+                HamburgerPortion = new MenuItemPortion { MenuItemId = 5, Id = 2, Name = "Standard", Price = 5 },
+                BigHamburger = new MenuItemPortion { MenuItemId = 5, Id = 4, Name = "Big", Price = 8 },
+                HappyHourPriceTag = "HH",
+                HamburgerHappyHourPrice = 5,
+                Department = new Department { Id = 5, TicketTypeId = 3, WarehouseId = 8 },
+                AccountTransactionType = new AccountTransactionType { Id = 15 }
+            };
             result.Hamburger.Portions.Add(result.HamburgerPortion);
-            result.BigHamburger = new MenuItemPortion { MenuItemId = 5, Id = 4, Name = "Big", Price = 8 };
             result.Hamburger.Portions.Add(result.BigHamburger);
-            result.HappyHourPriceTag = "HH";
-            result.HamburgerHappyHourPrice = 5;
-            result.Department = new Department { Id = 5, TicketTypeId = 3, WarehouseId = 8 };
-            result.AccountTransactionType = new AccountTransactionType { Id = 15 };
             return result;
         }
 
@@ -244,12 +247,12 @@ namespace Samba.Domain.Tests
         public OrderBuilderTestContext With18PTaxTemplate()
         {
             TaxTemplate = new TaxTemplate
-                             {
-                                 Id = 8,
-                                 Name = "%18 Tax",
-                                 Rate = 18,
-                                 AccountTransactionType = AccountTransactionType.Default
-                             };
+            {
+                Id = 8,
+                Name = "%18 Tax",
+                Rate = 18,
+                AccountTransactionType = AccountTransactionType.Default
+            };
             return this;
         }
 

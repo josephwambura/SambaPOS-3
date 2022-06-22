@@ -80,10 +80,10 @@ namespace Samba.Modules.PaymentModule
 
         private bool CanExecuteAutomationCommand(AutomationCommandData arg)
         {
-            if (arg == null) return false;
-            if (_paymentEditor.SelectedTicket != null && _paymentEditor.SelectedTicket.IsLocked && arg.VisualBehaviour == 1) return false;
-            if (!arg.CanExecute(_paymentEditor.SelectedTicket)) return false;
-            return _expressionService.EvalCommand(FunctionNames.CanExecuteAutomationCommand, arg.AutomationCommand, new { Ticket = _paymentEditor.SelectedTicket }, true);
+            return arg != null
+&& ((_paymentEditor.SelectedTicket == null || !_paymentEditor.SelectedTicket.IsLocked || arg.VisualBehaviour != 1)
+&& arg.CanExecute(_paymentEditor.SelectedTicket)
+&& _expressionService.EvalCommand(FunctionNames.CanExecuteAutomationCommand, arg.AutomationCommand, new { Ticket = _paymentEditor.SelectedTicket }, true));
         }
 
         private void OnSelectCalculationSelector(CalculationSelector calculationSelector)
@@ -92,7 +92,7 @@ namespace Samba.Modules.PaymentModule
             {
                 var amount = calculationType.Amount;
                 if (amount == 0) amount = _tenderedValueViewModel.GetTenderedValue();
-                if (calculationType.CalculationMethod == 0 || calculationType.CalculationMethod == 1) amount = amount / _paymentEditor.ExchangeRate;
+                if (calculationType.CalculationMethod == 0 || calculationType.CalculationMethod == 1) amount /= _paymentEditor.ExchangeRate;
                 _paymentEditor.SelectedTicket.AddCalculation(calculationType, amount);
             }
             _tenderedValueViewModel.UpdatePaymentAmount(0);
@@ -102,10 +102,10 @@ namespace Samba.Modules.PaymentModule
 
         private bool CanSelectCalculationSelector(CalculationSelector calculationSelector)
         {
-            if (calculationSelector == null) return false;
-            if (_paymentEditor.SelectedTicket != null && (_paymentEditor.SelectedTicket.IsLocked || _paymentEditor.SelectedTicket.IsClosed)) return false;
-            if (_paymentEditor.SelectedTicket != null && _paymentEditor.SelectedTicket.GetRemainingAmount() == 0 && _paymentEditor.SelectedTicket != null && !calculationSelector.CalculationTypes.Any(x => _paymentEditor.SelectedTicket.Calculations.Any(y => y.CalculationTypeId == x.Id))) return false;
-            return !calculationSelector.CalculationTypes.Any(x => x.MaxAmount > 0 && _tenderedValueViewModel.GetTenderedValue() > x.MaxAmount);
+            return calculationSelector != null
+&& (_paymentEditor.SelectedTicket == null || !_paymentEditor.SelectedTicket.IsLocked && !_paymentEditor.SelectedTicket.IsClosed)
+&& ((_paymentEditor.SelectedTicket == null || _paymentEditor.SelectedTicket.GetRemainingAmount() != 0 || _paymentEditor.SelectedTicket == null || calculationSelector.CalculationTypes.Any(x => _paymentEditor.SelectedTicket.Calculations.Any(y => y.CalculationTypeId == x.Id)))
+&& !calculationSelector.CalculationTypes.Any(x => x.MaxAmount > 0 && _tenderedValueViewModel.GetTenderedValue() > x.MaxAmount));
         }
 
         public void Update()

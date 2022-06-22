@@ -21,9 +21,7 @@ namespace Samba.Presentation.ViewModels
         {
             get
             {
-                if (Model.CalculationType == 0 || Model.CalculationType == 1)
-                    return (Model.Amount / 100).ToString("#,#0.##%");
-                return "";
+                return Model.CalculationType == 0 || Model.CalculationType == 1 ? (Model.Amount / 100).ToString("#,#0.##%") : "";
             }
         }
 

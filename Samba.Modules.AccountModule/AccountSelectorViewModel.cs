@@ -30,8 +30,7 @@ namespace Samba.Modules.AccountModule
 
         protected virtual void OnRefreshed()
         {
-            EventHandler handler = Refreshed;
-            if (handler != null) handler(this, EventArgs.Empty);
+            Refreshed?.Invoke(this, EventArgs.Empty);
         }
 
         public ICaptionCommand ShowAccountDetailsCommand { get; set; }
@@ -86,9 +85,7 @@ namespace Samba.Modules.AccountModule
             get
             {
                 return _automationCommands ?? (_automationCommands =
-                    _selectedAccountScreen != null
-                    ? _selectedAccountScreen.AutmationCommandMaps.Select(x => new AccountScreenAutmationCommandMapViewModel(x, _cacheService))
-                    : null);
+                    _selectedAccountScreen?.AutmationCommandMaps.Select(x => new AccountScreenAutmationCommandMapViewModel(x, _cacheService)));
             }
         }
 

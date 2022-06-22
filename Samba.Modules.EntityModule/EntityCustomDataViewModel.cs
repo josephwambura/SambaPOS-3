@@ -91,8 +91,7 @@ namespace Samba.Modules.EntityModule
 
         private string GetPrimaryFieldName()
         {
-            if (EntityType == null) return "";
-            return !string.IsNullOrEmpty(EntityType.PrimaryFieldName) ? EntityType.PrimaryFieldName : Resources.Name;
+            return EntityType == null ? "" : !string.IsNullOrEmpty(EntityType.PrimaryFieldName) ? EntityType.PrimaryFieldName : Resources.Name;
         }
 
         public string GetValue(string name)

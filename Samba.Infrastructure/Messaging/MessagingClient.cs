@@ -23,8 +23,7 @@ namespace Samba.Infrastructure.Messaging
         {
             if (_clientObject != null && _messageListener != null && IsConnected)
             {
-                string[] arrData;
-                _clientObject.GetData(out arrData);
+                _clientObject.GetData(out string[] arrData);
 
                 foreach (var t in arrData.Distinct())
                 {
@@ -126,8 +125,10 @@ namespace Samba.Infrastructure.Messaging
 
             var clientProv = new BinaryClientFormatterSinkProvider();
 
-            IDictionary props = new Hashtable();
-            props["port"] = 0;
+            IDictionary props = new Hashtable
+            {
+                ["port"] = 0
+            };
 
             _channel = new TcpChannel(props, clientProv, serverProv);
 

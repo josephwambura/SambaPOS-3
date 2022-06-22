@@ -18,10 +18,7 @@ namespace Samba.Persistance.Specification
 
         public NotSpecification(Expression<Func<TEntity, bool>> originalSpecification)
         {
-            if (originalSpecification == null)
-                throw new ArgumentNullException("originalSpecification");
-
-            _originalCriteria = originalSpecification;
+            _originalCriteria = originalSpecification ?? throw new ArgumentNullException("originalSpecification");
         }
 
         public override Expression<Func<TEntity, bool>> SatisfiedBy()
