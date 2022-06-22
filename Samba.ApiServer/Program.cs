@@ -52,9 +52,9 @@ namespace Samba.ApiServer
 
             //GET =>  http://localhost:8080/api/getToken/{pin}
             config.Routes.MapHttpRoute("LoginRoute", "api/getToken/{pin}", new
-                                                                           {
-                                                                               controller = "Login"
-                                                                           });
+            {
+                controller = "Login"
+            });
             //GET =>  http://localhost:8080/api/{token}/{controller}/{id}
             config.Routes.MapHttpRoute("API Default", "api/{token}/{controller}/{id}",
                                        new
@@ -70,9 +70,9 @@ namespace Samba.ApiServer
                 if (LocalSettings.TokenLifeTime.Ticks > 0)
                 {
                     var tokenGarbageTimer = new Timer
-                                                {
-                                                    Interval = (int)new TimeSpan(0, 1, 0).TotalMilliseconds
-                                                };
+                    {
+                        Interval = (int)new TimeSpan(0, 1, 0).TotalMilliseconds
+                    };
                     tokenGarbageTimer.Tick += Token.CollectGarbage;
                     tokenGarbageTimer.Start();
                 }

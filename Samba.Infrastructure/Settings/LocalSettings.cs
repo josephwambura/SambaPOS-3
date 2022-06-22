@@ -224,7 +224,7 @@ html
         public static string CurrencySymbol { get { return CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol; } }
 
         private static int DefaultDbVersion { get { return 24; } }
-        private static string DefaultAppVersion { get { return "3.0.35 BETA"; } }
+        private static string DefaultAppVersion { get { return "4.0.0 BETA 01"; } }
 
         public static int DbVersion { get { return CanReadVersionFromFile() ? Convert.ToInt32(GetVersionDat("DbVersion")) : DefaultDbVersion; } }
         public static string AppVersion { get { return CanReadVersionFromFile() ? GetVersionDat("AppVersion") : DefaultAppVersion; } }
@@ -296,6 +296,13 @@ html
                 : throw new ArgumentOutOfRangeException("versionType", "VersionType " + versionType + " doesn't exist!");
         }
 
+        /// <summary>
+        /// In February 2013, Microsoft announced that SQL Server Compact Edition had been deprecated.
+        /// Although no new versions or updates are planned, Microsoft will continue to support SQL Compact through their standard lifecycle support policy.
+        /// Extended support for SQL Server Compact 4.0 ended on July 13, 2021.
+        /// https://en.wikipedia.org/wiki/SQL_Server_Compact#cite_note-19
+        /// </summary>
+        /// <returns></returns>
         public static bool IsSqlce40Installed()
         {
             var rk = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Microsoft SQL Server Compact Edition\\v4.0");
