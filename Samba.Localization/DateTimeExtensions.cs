@@ -27,8 +27,7 @@ namespace Samba.Localization
         public static string PluralizeInt(string keyword, int value)
         {
             var suffix = Resources.PluralCurrencySuffix ?? ".";
-            if (value > 1) return keyword + suffix.Replace(".", "");
-            return keyword;
+            return value > 1 ? keyword + suffix.Replace(".", "") : keyword;
         }
 
         public static string ToMonthName(this DateTime dateTime)

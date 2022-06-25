@@ -119,9 +119,9 @@ namespace Samba.Infrastructure.Messaging
 
             _messageListener = messageListener;
             var serverProv = new BinaryServerFormatterSinkProvider
-                                 {
-                                     TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full
-                                 };
+            {
+                TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full
+            };
 
             var clientProv = new BinaryClientFormatterSinkProvider();
 

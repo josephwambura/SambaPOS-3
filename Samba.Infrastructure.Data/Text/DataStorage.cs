@@ -40,8 +40,7 @@ namespace Samba.Infrastructure.Data.Text
         internal T GetById<T>(int id)
         {
             Dictionary<int, object> list = GetDataList(typeof(T));
-            if (list.ContainsKey(id)) return (T)list[id];
-            return default(T);
+            return list.ContainsKey(id) ? (T)list[id] : default(T);
         }
 
         internal IEnumerable<T> GetItems<T>()
@@ -112,8 +111,5 @@ namespace Samba.Infrastructure.Data.Text
         {
             return GetDataList(typeof(T)).Values.Cast<T>().Where(predicate.Compile()).ToList();
         }
-
-
-
     }
 }

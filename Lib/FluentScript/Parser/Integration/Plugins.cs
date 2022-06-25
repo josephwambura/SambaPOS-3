@@ -494,8 +494,7 @@ namespace Fluentscript.Lib.Parser.Integration
         {
             var plugin = GetExp(token);
             _lastMatchedExp = plugin;
-            if (plugin == null) return false;
-            return true;
+            return plugin != null;
         }
 
 
@@ -556,10 +555,9 @@ namespace Fluentscript.Lib.Parser.Integration
             int tokenPos = isCurrentToken ? 0 : 1;
             var plugin = GetTok(token, tokenPos);
             _lastMatchedTok = plugin;
-            if (plugin == null) return false;
-            return true;
+            return plugin != null;
         }
-        
+
 
         /// <summary>
         /// Whether or not there is an expression based plugin for the token supplied.
@@ -617,30 +615,14 @@ namespace Fluentscript.Lib.Parser.Integration
         /// </summary>
         /// <param name="name">Name of the function</param>
         /// <returns></returns>
-        public bool ContainsExp(string name)
-        {
-            if (_expPlugins.ContainsKey(name)) return true;
-            if (_expPlugins.ContainsKey(name.ToLower())) return true;
-            return false;
-        }
-
+        public bool ContainsExp(string name) => _expPlugins.ContainsKey(name) || _expPlugins.ContainsKey(name.ToLower());
 
         /// <summary>
         /// Whether or not there is a statement plugin with the supplied name.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public bool ContainsStmt(string name)
-        {
-            if (_stmtPlugins.ContainsKey(name))
-                return true;
-            
-            if (_expStmtPlugins.ContainsKey(name))
-                return true;
-
-            return false;
-        }
-
+        public bool ContainsStmt(string name) => _stmtPlugins.ContainsKey(name) || _expStmtPlugins.ContainsKey(name);
 
         /// <summary>
         /// Get the postfix plugin.
@@ -764,7 +746,7 @@ namespace Fluentscript.Lib.Parser.Integration
             if (token == Tokens.EndToken) return null;
             if (map == null || map.Count == 0) return null;
 
-            string name = key == null ? token.Text : key;
+            string name = key ?? token.Text;
             bool isCurrentToken = tokenPos == 0;
             List<ILangPlugin> plugins = null;
             if (name == null)
@@ -777,16 +759,16 @@ namespace Fluentscript.Lib.Parser.Integration
             }
             else
             {
-                var kind = "IdToken";
-                if (token.Kind == TokenKind.Ident) kind = "IdToken";
-                else if (token.Kind == TokenKind.LiteralDate) kind = "DateToken";
-                else if (token.Kind == TokenKind.LiteralNumber) kind = "NumberToken";
-                else kind = token.GetType().Name;
-
+                var kind = token.Kind == TokenKind.Ident
+                    ? "IdToken"
+                    : token.Kind == TokenKind.LiteralDate
+                    ? "DateToken"
+                    : token.Kind == TokenKind.LiteralNumber ? "NumberToken" : token.GetType().Name;
                 name = "$" + kind;
                 if (map.ContainsKey(name))
                     plugins = map[name];
             }
+
             if (plugins != null)
             {
                 // Either a specific word like "select" or a general IdToken.                
@@ -899,15 +881,17 @@ namespace Fluentscript.Lib.Parser.Integration
             var name = plugin.GetType().Name.Replace("Plugin", "");
             var filepath = @"C:\Dev\Kishore\Apps\FluentScript\fluentscript_latest2\build\plugin_template.js";
             var content = System.IO.File.ReadAllText(filepath);
-            var replacements = new Dictionary<string, string>();
-            replacements["name"] = name;
-            replacements["desc"] = "";
-            replacements["type"] = "expr";
-            replacements["precedence"] = plugin.Precedence.ToString();
-            replacements["isStatement"] = plugin.IsStatement.ToString().ToLower();
-            replacements["isEndOfStatementRequired"] = plugin.IsEndOfStatementRequired.ToString().ToLower();
-            replacements["isSystemLevel"] = plugin.IsSystemLevel.ToString().ToLower();
-            replacements["isAssignmentSupported"] = plugin.IsAssignmentSupported.ToString().ToLower();
+            var replacements = new Dictionary<string, string>
+            {
+                ["name"] = name,
+                ["desc"] = "",
+                ["type"] = "expr",
+                ["precedence"] = plugin.Precedence.ToString(),
+                ["isStatement"] = plugin.IsStatement.ToString().ToLower(),
+                ["isEndOfStatementRequired"] = plugin.IsEndOfStatementRequired.ToString().ToLower(),
+                ["isSystemLevel"] = plugin.IsSystemLevel.ToString().ToLower(),
+                ["isAssignmentSupported"] = plugin.IsAssignmentSupported.ToString().ToLower()
+            };
 
             var tokens = "";
             for(var ndx = 0; ndx < plugin.StartTokens.Count(); ndx++)
@@ -931,9 +915,8 @@ namespace Fluentscript.Lib.Parser.Integration
             replacements["examples"] = examples;
 
             foreach(var pair in replacements)
-            {
                 content = content.Replace("${" + pair.Key + "}", pair.Value);
-            }
+            
             return content;
         }
     }

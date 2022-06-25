@@ -215,7 +215,7 @@ html
         public static string UserSettingsFileName { get { return UserPath + "\\SambaSettings.txt"; } }
 
         public static string SettingsFileName { get { return File.Exists(UserSettingsFileName) ? UserSettingsFileName : CommonSettingsFileName; } }
-
+        
         public static string CurrencyFormat { get; set; }
         public static string QuantityFormat { get; set; }
         public static string ReportCurrencyFormat { get; set; }
@@ -386,9 +386,9 @@ html
             SaveSettings();
         }
 
-        public static string ReadSetting(string settingName)
-        {
-            return _settingsObject.GetCustomValue(settingName);
-        }
+        public static string ReadSetting(string settingName) => _settingsObject.GetCustomValue(settingName);
+
+        public static string DefaultUserPINCode { get { return "1234"; } }
+
     }
 }

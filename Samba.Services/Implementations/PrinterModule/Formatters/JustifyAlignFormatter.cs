@@ -56,12 +56,9 @@ namespace Samba.Services.Implementations.PrinterModule.Formatters
             if (GetLength(parts[0]) > maxWidth)
                 parts[0] = parts[0].Substring(0, maxWidth);
 
-            if (canBreak && parts[0].Length + text.Length > maxWidth)
-            {
-                return parts[0] + "\r" + text.PadLeft(maxWidth);
-            }
-
-            return Merge(maxWidth, FixStr(parts[0], maxWidth - GetLength(text)), text);
+            return canBreak && parts[0].Length + text.Length > maxWidth
+                ? parts[0] + "\r" + text.PadLeft(maxWidth)
+                : Merge(maxWidth, FixStr(parts[0], maxWidth - GetLength(text)), text);
         }
 
         private static string FixStr(string str, int lenght)
@@ -125,12 +122,12 @@ namespace Samba.Services.Implementations.PrinterModule.Formatters
                 if (asc == 9)
                 {
                     lenTotal = Math.Truncate(lenTotal);
-                    lenTotal = lenTotal + GetTabLength(lenTotal);
+                    lenTotal += GetTabLength(lenTotal);
                 }
                 else if (asc > 0 && asc < 256)
                     lenTotal++;
                 else
-                    lenTotal = lenTotal + GetDifference(strWord);
+                    lenTotal += GetDifference(strWord);
             }
             return lenTotal;
         }
@@ -147,19 +144,12 @@ namespace Samba.Services.Implementations.PrinterModule.Formatters
         {
             var diff = Convert.ToInt32(lenTotal);
             if (lenTotal >= 8)
-                diff = diff % 8;
+                diff %= 8;
             return 8 - diff;
         }
 
-        public FormattedText GetSize(string text)
-        {
-            var v = new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(LocalSettings.PrintFontFamily), 12, Brushes.Black);
-            return v;
-        }
+        public FormattedText GetSize(string text) => new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(LocalSettings.PrintFontFamily), 12, Brushes.Black, 1.25);
 
-        public int[] GetColumnWidths()
-        {
-            return _columnWidths;
-        }
+        public int[] GetColumnWidths() => _columnWidths;
     }
 }

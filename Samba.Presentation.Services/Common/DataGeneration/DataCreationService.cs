@@ -204,13 +204,13 @@ namespace Samba.Presentation.Services.Common.DataGeneration
             _workspace.CommitChanges();
 
             var ticketType = new TicketType
-                                     {
-                                         Name = Resources.Ticket,
-                                         TicketNumerator = ticketNumerator,
-                                         OrderNumerator = orderNumerator,
-                                         SaleTransactionType = saleTransactionType,
-                                         ScreenMenuId = screen.Id,
-                                     };
+            {
+                Name = Resources.Ticket,
+                TicketNumerator = ticketNumerator,
+                OrderNumerator = orderNumerator,
+                SaleTransactionType = saleTransactionType,
+                ScreenMenuId = screen.Id,
+            };
 
             ticketType.EntityTypeAssignments.Add(new EntityTypeAssignment { EntityTypeId = tableEntityType.Id, EntityTypeName = tableEntityType.Name, SortOrder = 10 });
             ticketType.EntityTypeAssignments.Add(new EntityTypeAssignment { EntityTypeId = customerEntityType.Id, EntityTypeName = customerEntityType.Name, SortOrder = 20 });
@@ -274,26 +274,26 @@ namespace Samba.Presentation.Services.Common.DataGeneration
             _workspace.Add(department);
 
             var transactionType = new InventoryTransactionType
-                                      {
-                                          Name = Resources.PurchaseTransactionType,
-                                          TargetWarehouseTypeId = warehouseType.Id,
-                                          DefaultTargetWarehouseId = localWarehouse.Id
-                                      };
+            {
+                Name = Resources.PurchaseTransactionType,
+                TargetWarehouseTypeId = warehouseType.Id,
+                DefaultTargetWarehouseId = localWarehouse.Id
+            };
 
             _workspace.Add(transactionType);
 
             var transactionDocumentType = new InventoryTransactionDocumentType
-                {
-                    Name = Resources.PurchaseTransaction,
-                    InventoryTransactionType = transactionType
-                };
+            {
+                Name = Resources.PurchaseTransaction,
+                InventoryTransactionType = transactionType
+            };
 
             _workspace.Add(transactionDocumentType);
 
             var role = new UserRole("Admin") { IsAdmin = true, DepartmentId = 1 };
             _workspace.Add(role);
 
-            var u = new User("Administrator", "1234") { UserRole = role };
+            var u = new User("Administrator", LocalSettings.DefaultUserPINCode) { UserRole = role };
             _workspace.Add(u);
 
             var ticketPrinterTemplate = new PrinterTemplate { Name = Resources.TicketTemplate, Template = GetDefaultTicketPrintTemplate() };
@@ -431,7 +431,7 @@ namespace Samba.Presentation.Services.Common.DataGeneration
             foreach (var resource in items)
             {
                 resource.EntityTypeId = tableTemplate.Id;
-                screen.AddScreenItem(new EntityScreenItem(tableTemplate,resource));
+                screen.AddScreenItem(new EntityScreenItem(tableTemplate, resource));
                 var state = new EntityStateValue { EntityId = resource.Id };
                 state.SetStateValue("Status", Resources.Available, "");
                 _workspace.Add(state);
@@ -476,8 +476,8 @@ namespace Samba.Presentation.Services.Common.DataGeneration
                                        where count == 0
                                        select new Entity { Name = value.Trim(), EntityTypeId = template.Id }
                                            into resource
-                                           where result.Count(x => x.Name.ToLower() == resource.Name.ToLower()) == 0
-                                           select resource)
+                                       where result.Count(x => x.Name.ToLower() == resource.Name.ToLower()) == 0
+                                       select resource)
                 {
                     result.Add(entity);
                 }
@@ -633,11 +633,11 @@ namespace Samba.Presentation.Services.Common.DataGeneration
                         }
 
                         var resultItem = new AccountTransactionType
-                                             {
-                                                 Name = name,
-                                                 SourceAccountTypeId = sAccTemplate.Id,
-                                                 TargetAccountTypeId = tAccTemplate.Id
-                                             };
+                        {
+                            Name = name,
+                            SourceAccountTypeId = sAccTemplate.Id,
+                            TargetAccountTypeId = tAccTemplate.Id
+                        };
 
                         if (sa != null) resultItem.DefaultSourceAccountId = sa.Id;
                         if (ta != null) resultItem.DefaultTargetAccountId = ta.Id;
@@ -677,12 +677,12 @@ namespace Samba.Presentation.Services.Common.DataGeneration
                         }
 
                         var resultItem = new AccountTransactionDocumentType
-                                             {
-                                                 Name = name,
-                                                 MasterAccountTypeId = accTemplate.Id,
-                                                 ButtonHeader = header,
-                                                 ButtonColor = "Gainsboro"
-                                             };
+                        {
+                            Name = name,
+                            MasterAccountTypeId = accTemplate.Id,
+                            ButtonHeader = header,
+                            ButtonColor = "Gainsboro"
+                        };
 
                         for (var i = 3; i < parts.Length; i++)
                         {

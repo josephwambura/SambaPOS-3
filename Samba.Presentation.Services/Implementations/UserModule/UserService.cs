@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Samba.Domain.Models.Tickets;
 using Samba.Domain.Models.Users;
+using Samba.Infrastructure.Settings;
 using Samba.Persistance;
 using Samba.Persistance.Data;
 using Samba.Presentation.Services.Common;
@@ -51,7 +52,7 @@ namespace Samba.Presentation.Services.Implementations.UserModule
 
         public bool IsDefaultUserConfigured
         {
-            get { return Users.Count() == 1 && Users.ElementAt(0).PinCode == "1234"; }
+            get { return Users.Count() == 1 && Users.ElementAt(0).PinCode == LocalSettings.DefaultUserPINCode; }
         }
 
         public string GetUserName(int userId)
