@@ -266,3 +266,10 @@ Packages.props
 
 #Local Log Files
 log*.txt
+
+# SambaPOS Folders
+SambaSetup/src/
+/Output/
+
+# mstest test results
+TestResults
