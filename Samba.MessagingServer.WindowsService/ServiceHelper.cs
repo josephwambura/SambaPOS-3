@@ -27,7 +27,7 @@ namespace Samba.MessagingServer.WindowsService
 
         public static ServiceControllerStatus? CheckServiceStatus()
         {
-            IniitServiceController();
+            InitServiceController();
             return _ctl == null ? null : (ServiceControllerStatus?)_ctl.Status;
         }
 
@@ -40,7 +40,7 @@ namespace Samba.MessagingServer.WindowsService
 
         public static void StartService(string[] args = null)
         {
-            IniitServiceController();
+            InitServiceController();
             if (_ctl.Status == ServiceControllerStatus.Stopped)
             {
                 if (args == null)
@@ -52,7 +52,7 @@ namespace Samba.MessagingServer.WindowsService
 
         public static void StopService()
         {
-            IniitServiceController();
+            InitServiceController();
             if (_ctl.Status == ServiceControllerStatus.Running)
             { _ctl.Stop(); }
         }
@@ -64,7 +64,7 @@ namespace Samba.MessagingServer.WindowsService
             return ServiceInstaller(true);
         }
 
-        private static void IniitServiceController()
+        private static void InitServiceController()
         {
             _ctl = ServiceController.GetServices()
                                   .Where(s => s.ServiceName == _serviceName)

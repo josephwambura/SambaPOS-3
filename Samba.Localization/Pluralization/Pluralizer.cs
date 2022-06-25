@@ -49,7 +49,7 @@ namespace Samba.Localization.Pluralization
                                                                                      { "foot$", "feet" },
                                                                                      { "tooth$", "teeth" },
                                                                                      { "goose$", "geese" },
-                                                                                     { "(.*)fe?", "$1ves" },         
+                                                                                     { "(.*)fe?", "$1ves" },
                                                                                      { "(.*)man$", "$1men" },
                                                                                      { "(.+[aeiou]y)$", "$1s" },
                                                                                      { "(.+[^aeiou])y$", "$1ies" },
