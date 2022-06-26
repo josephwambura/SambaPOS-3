@@ -224,6 +224,7 @@ html
         public static string CurrencySymbol { get { return CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol; } }
 
         private static int DefaultDbVersion { get { return 24; } }
+
         private static string DefaultAppVersion { get { return "4.0.0 BETA 01"; } }
 
         public static int DbVersion { get { return CanReadVersionFromFile() ? Convert.ToInt32(GetVersionDat("DbVersion")) : DefaultDbVersion; } }

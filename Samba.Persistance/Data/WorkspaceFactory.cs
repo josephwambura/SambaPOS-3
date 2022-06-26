@@ -36,6 +36,7 @@ namespace Samba.Persistance.Data
                     ? string.Format("data source={0}\\{1}.sdf", LocalSettings.DocumentPath, LocalSettings.AppName)
                     : GetTextFileName();
             }
+
             if (_connectionString.EndsWith(".sdf"))
             {
                 if (!_connectionString.ToLower().Contains("data source") && !_connectionString.Contains(":\\"))
